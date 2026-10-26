@@ -55,7 +55,21 @@ Lệnh khôi phục `assets/HDV_LOGO_ORIGINAL_2048.png` và `release/C3D_TOOL_ST
 
 ## References Autodesk theo phiên bản, độc lập tool
 
-- `references/<year>/`: chính sách và manifest tham chiếu được dùng cho bất kỳ công cụ nào cần Autodesk API, không giới hạn ở Brep hoặc một DLL cụ thể.
-- `scripts/add_reference.ps1`: nhận tên assembly bất kỳ và năm host, đặt file hợp lệ vào kho tham chiếu cục bộ (DLL không đưa lên Git).
-- Mỗi dự án chọn đúng các tham chiếu mình sử dụng, không ép mọi project dùng toàn bộ thư viện.
-- Tất cả trạng thái build/NETLOAD được nghiệm thu theo từng dự án riêng; repository chuẩn không mang trạng thái thành công của dự án khác.
+Các cấu hình chung cho Civil 3D 2024/2025/2026 được mô tả tại [references/README.md](references/README.md).
+
+- `scripts/reference_manager.py`: nhập DLL, kiểm tra hash/PE và các tham chiếu **đã kê khai** trước build; hỗ trợ `--project`, `--require`, `--requirements-json` và `list`.
+- `scripts/add_reference.ps1`: nhập DLL tham chiếu bằng PowerShell trên Windows khi không dùng Python.
+- `references/<year>/manifest.json`: chính sách chung theo host, không phải danh sách assembly bắt buộc cho mọi dự án.
+- `.github/workflows/test-reference-manager.yml`: tự kiểm thử logic quản lý tham chiếu bằng file PE mô phỏng; không chạy BuildKit hay Civil 3D trên GitHub.
+
+**Ví dụ nhập thư viện do người dùng có quyền sử dụng:**
+
+```powershell
+python scripts/reference_manager.py import --year 2025 --source "C:\\AutodeskRefs\\MyAssembly.dll"
+python scripts/reference_manager.py check --year 2025 --require MyAssembly.dll
+python scripts/reference_manager.py check --year 2025 --project "C:\\Source\\CadHost.csproj"
+```
+
+Các DLL Autodesk là tài nguyên build **cục bộ**, không được tự ý commit lên kho GitHub công khai. File DLL được người dùng cung cấp trong một hội thoại có thể được đưa vào **gói tham chiếu riêng để dùng cục bộ**, không ràng buộc bộ quy chuẩn vào một công cụ cụ thể.
+
+**Giới hạn nghiệm thu:** file có mặt/hash/PE hợp lệ không đồng nghĩa đúng năm Autodesk, biên dịch thành công hay NETLOAD thành công; phải kiểm chứng các gate riêng.
