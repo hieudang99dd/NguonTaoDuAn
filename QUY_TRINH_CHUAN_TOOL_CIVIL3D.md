@@ -6,7 +6,7 @@
 **Quy chuẩn nhận diện:** giữ logo HDV gốc, bố trí logo đi cùng **tên tiếng Anh đầy đủ** của từng tool.
 
 **Mã:** C3D-SOP-001  
-**Phiên bản:** 1.2.0 — bổ sung quản lý danh mục thuật toán hiện hành tự làm mới  
+**Phiên bản:** 1.3.0 — chỉ phát triển và bàn giao DLL NETLOAD — bổ sung quản lý danh mục thuật toán hiện hành tự làm mới  
 **Ngày:** 26/10/2026  
 **Phạm vi:** các công cụ C#/.NET hoạt động trong Autodesk AutoCAD/Civil 3D, ưu tiên 2024/2025, chuẩn bị mở rộng 2026.  
 **Nhãn trạng thái:** TÀI LIỆU QUY TRÌNH / chưa phải DLL mới, chưa thay đổi mã nguồn tool cũ.
@@ -15,7 +15,7 @@
 
 - **Đã đọc trực tiếp từ ZIP:** `SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip` (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), `HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip` (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), `HDV_C3D_BuildKit_1_0_OFFLINE.zip` (công cụ biên dịch và manifest), `HVDTools_RibbonPro_2025_FULL_SOURCE.zip` (mã nguồn installer/updater, tài liệu), `PROJECT_MASTER_SOURCE.md` và đặc tả `SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md`, `ATGT_Quantity_Revision_Manager_Spec_v1_1.md`.
 - **Phát hiện nhưng chưa đọc trực tiếp byte ZIP tại lần tổng hợp:** QSL v0.8.2, SolidCutterPro v2.3, SolidInfo v4.4, SolidLayer v1.1. Các mục liên quan lấy từ lịch sử yêu cầu/tên phát hành, không suy thành chứng nhận code mới nhất.
-- **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS), installer/Ribbon thực tế (INSTALL_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
+- **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS), kiểm chứng nạp lệnh và DLL bằng NETLOAD (NETLOAD_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
 
 ## 1. Nguyên tắc bất biến
 
@@ -78,18 +78,15 @@ Ràng buộc phải nêu rõ:
 **Gate G2:** HTML preview thể hiện đúng luồng và các trạng thái; xác nhận preview không phải ứng dụng CAD thật. **Bắt buộc:** logo HDV chuẩn, tên tool tiếng Anh đầy đủ, hiển thị đúng tại 350–430 px palette; không bị méo/cắt/chồng nút.
 
 
-### 4.1. Chuẩn logo HDV dùng xuyên suốt vòng đời tool (mới v1.1)
+### 4.1. Chuẩn logo HDV trong giao diện tool và tài liệu
 
 | Điểm xuất hiện | Tệp đề xuất | Quy tắc bắt buộc |
 |---|---|---|
 | Tiêu đề PaletteSet / WebView2 | `assets/HDV_LOGO_64.png` hoặc `_128.png` | Hiển thị logo cạnh **tên tool tiếng Anh đầy đủ**; ảnh `object-fit:contain`, không méo, không ép toàn bộ tên thành `HDV` |
-| Ribbon / thanh công cụ | `assets/HDV_LOGO_32.png` (hoặc 16/64 theo hệ icon) | Logo thương hiệu thống nhất, **nhãn Ribbon phản ánh đúng nghiệp vụ**; xác minh CUIX/host hỗ trợ định dạng icon; không thay `ribbonIcon` khi updater chưa hỗ trợ file icon |
-| Bộ cài và trình cập nhật | `assets/HDV_TOOLS.ico`, `_256.png` | Logo hiển thị khi quy trình đóng gói Windows thật hỗ trợ; EXE chỉ được xem là đã nhúng icon sau khi kiểm tra resource trên binary và giao diện thực |
 | README / SOP / tài liệu nghiệm thu | `assets/HDV_LOGO_256.png` | Tên nhóm HDV ở đầu tài liệu, ghi chú rõ build/mock/CAD-pass |
 | ZIP bàn giao source / deploy | `assets/HDV_LOGO_ORIGINAL_2048.png` + PNG nhỏ | Asset thuộc package, đường dẫn tương đối ổn định, không phụ thuộc hình từ web |
-| Hình xem trước / giới thiệu tool | `_256.png` hoặc `_512.png` | Giữ màu/độ tương phản/bố cục gốc, không chèn khẩu hiệu hoặc làm biến dạng logo |
 
-**Quy tắc triển khai:** file gốc 2048×2048 phải giữ nguyên byte/hash; chỉ thu nhỏ tạo bản cho UI. Tránh kéo giãn, cắt chữ H/D, đổi màu hoặc gắn thêm chữ vào chính file logo. Trong thanh tiêu đề, tách riêng ảnh logo và text tên tool để nội dung chữ luôn sắc nét, không phải xử lý ảnh. Ảnh 16/32 px chỉ là fallback — kiểm tra độ nhận diện ở DPI thực; nếu thiếu rõ ràng, thiết kế icon đơn giản riêng trong một bước được phê duyệt (không tự sửa logo gốc).
+**Quy tắc triển khai:** file gốc 2048×2048 phải giữ nguyên byte/hash; chỉ thu nhỏ tạo bản cho UI. Tránh kéo giãn, cắt chữ H/D, đổi màu hoặc gắn thêm chữ vào chính file logo. Trong thanh tiêu đề, tách riêng ảnh logo và text tên tool để nội dung chữ luôn sắc nét. Ảnh 16/32 px chỉ là fallback — kiểm tra độ nhận diện ở DPI thực; nếu thiếu rõ ràng, thiết kế icon đơn giản riêng trong một bước được phê duyệt (không tự sửa logo gốc).
 
 **Tích hợp kỹ thuật:** `templates/branding.json` là metadata hướng dẫn, **không phải schema đã được CadHost hay HVDTools updater hỗ trợ**. Khi triển khai, nhúng image resources ở CadHost/WebView2, hoặc copy theo cấu trúc bundle để UI tìm thấy. Không mặc định đổi trường `ribbonIcon: "box"` thành đường dẫn PNG: updater hiện tại cần được mở rộng và test Windows trước khi làm vậy. Các namespace lịch sử `HDVQ`, `HVDTools` giữ nguyên cho đến khi có migration riêng; việc dùng logo HDV không tự động đổi command hoặc tên assembly.
 
@@ -223,7 +220,7 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 **Gate G6:** 0 compile error, danh sách warning công khai, result.json, compiler log, metadata DLL/TFM, dll/dependencies/UI đầy đủ; không chép API Autodesk DLL làm thư viện chạy end-user.
 
-## 9. Bước 07 — Kiểm thử 5 lớp và nghiệm thu
+## 9. Bước 07 — Kiểm thử 4 lớp và nghiệm thu
 
 **A. Static/Unit:** compile, phân tích API, unit engine; sai lệch số học, dữ liệu trống, unicode, filename, layer, mã nguồn đầy đủ. Kiểm tra `ALGORITHM_INVENTORY.md` trùng khớp metadata mã nguồn, không có thuật toán bị thay thế.
 
@@ -233,35 +230,42 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 **D. CAD/DWG:** DWG chuẩn/lỗi/nặng, nhiều DWG, chuyển tài liệu, ctrl+Z/undo, save/open, Xref, block, layer trùng tên, INSUNITS=0, WCS/UCS, các hình học sát/không giao/biên, các solid lớn và solid trụ/cống, chạy batch có phần thất bại. So output với công cụ Civil 3D Native khi nghiệp vụ tương đương.
 
-**E. Installer/Ribbon:** chạy EXE trên máy Windows thử, xác minh đường dẫn bundle/cuiX, tab BIM TUYẾN và nhóm đúng, icon/tên đầy đủ, tự động load sau khởi động lại, update/thêm tool/rollback/uninstall, SECURELOAD/TRUSTEDPATHS giữ an toàn. Không khẳng định cài được nếu mới test mô phỏng CUIX trên Linux.
+**Gate G7:** chỉ xác nhận `NETLOAD_PASS` sau khi nạp DLL trong Civil 3D đúng phiên bản, gọi lệnh thực và mở UI; chỉ `CAD_PASS` khi kiểm thử kết quả trên DWG thật. Không yêu cầu Ribbon, EXE, CUIX, .bundle hoặc trình cài đặt.
 
-**Gate G7:** chỉ `CAD_PASS` khi có test thực trên đúng phiên bản; chỉ `INSTALL_PASS` khi EXE/Ribbon được kiểm tra thực trên Windows/C3D.
+## 10. Bước 08 — Chuẩn bị DLL nạp NETLOAD (không đóng gói installer)
 
-## 10. Bước 08 — Đóng gói 3 tầng
+**Đầu ra duy nhất phải chạy được:** `<Tool>.CadHost.dll` cho từng phiên bản Civil 3D được hỗ trợ. Các dependency riêng, UI WebView2, cấu hình, logo và resource cần thiết đặt cùng thư mục theo cấu trúc mà bộ nạp thực tế sử dụng. Không sao chép Autodesk API references từ môi trường build vào output end-user.
 
-**Tầng 1 — Source package:** `ALGORITHM_INVENTORY.md` đã cập nhật, `scripts/update_algorithm_inventory.py`, solution, toàn bộ `.cs`/UI/assets (bao gồm logo HDV gốc và biến thể nhỏ), recipe, tests, docs, license, hash, đầy đủ file bổ trợ; không kèm private key.
+**Bàn giao bổ trợ:** mã nguồn đầy đủ, solution, danh mục thuật toán hiện hành, script cập nhật, báo cáo QA, changelog, hướng dẫn NETLOAD. Có thể gom thư mục nguồn và DLL thành ZIP để truyền file, nhưng ZIP **không phải installer**.
 
-**Tầng 2 — NETLOAD package (mỗi năm):** thư mục có `*.CadHost.dll`, `Domain/Application/Infrastructure`, WebView2 assemblies/loader và UI/assets bao gồm logo HDV nếu không embedded, config, hướng dẫn NETLOAD, báo cáo phiên bản; không trộn 2024 với 2025.
+```text
+Deliverables/
+├── C3D2024/
+│   ├── <Tool>.CadHost.dll
+│   ├── <Tool>.Domain.dll / <Tool>.Application.dll / <Tool>.Infrastructure.dll (nếu tách DLL)
+│   └── dependencies + UI + assets + config (nếu cần)
+├── C3D2025/
+│   └── <Tool>.CadHost.dll + các dependency/runtime assets tương ứng
+├── C3D2026/ (chỉ khi đã build và xác nhận tương thích)
+├── SOURCE/ (solution + mã nguồn + scripts + tài liệu)
+└── README_NETLOAD.md
+```
 
-**Tầng 3 — Product installation:** `tool.json`, `.bundle/PackageContents.xml`, CUIX/Ribbon hoặc RibbonHost, logo/icon Windows được build và xác minh, setup EXE/updater, installer log, backup/rollback. Update plugin riêng phải không ghi đè plugin khác cùng command ID.
+**Điều kiện đạt:** file DLL thực tồn tại, kiểm tra đúng runtime/bitness/API refs, tập hợp đủ dependency, ghi lệnh CAD và đường dẫn DLL, không có kết quả build giả. `BUILD_PASS` là có DLL hợp lệ; `NETLOAD_PASS` đòi hỏi kiểm tra trên Civil 3D thực tế.
 
-**tool.json mẫu:** xem `templates/tool.json` (chỉ là mẫu, cần sửa `id`, `command`, `entryAssembly`, `supportedYears` đúng bản tool đã nghiệm thu).
-
-**Gate G8:** bản tải về có nội dung thật, hash SHA256 và cây file kiểm tra được, cài đặt/reinstall/upgrade không làm mất plugin khác.
+**Loại khỏi phạm vi dự án:** EXE, installer, CUIX, Ribbon, `.bundle`, updater, Windows shell integration, ký số bộ cài, phân phối/cài đặt plugin. Toàn bộ thuộc dự án riêng, không phải điều kiện nghiệm thu của quy trình này.
 
 ## 11. Bước 09 — Bàn giao và quản lý phiên bản
 
 Bàn giao tối thiểu:
 
-1. `Tool_FULL_SOURCE_<version>.zip`.
-2. `Tool_NETLOAD_C3D2024_<version>.zip` và `Tool_NETLOAD_C3D2025_<version>.zip` (chỉ khi đã build).
-3. `Tool_Setup_<version>.exe` hoặc `.bundle` (chỉ khi đã tạo); mọi file cần cài có trong payload.
-4. `QA_REPORT.md` có ma trận 6 trạng thái; không đánh tráo MOCK thành CAD test.
-5. `CHANGELOG.md`, `PROJECT_STATUS.md`, `ALGORITHM_INVENTORY.md` (tên + chức năng **hiện hành**), script tự làm mới, `README_NETLOAD.md`, `SHA256SUMS.txt`.
-6. `CommandMethod` chính + tên đầy đủ tiếng Anh + **logo HDV theo asset chuẩn** + menu Ribbon chuẩn (nếu tích hợp thật).
-7. Phương án nâng cấp/thêm tool: `Incoming/<tool>.zip` với `tool.json`, đóng CAD, updater, khởi động lại, verify command.
+1. `<Tool>.CadHost.dll` theo từng host năm **đã build thành công**, cùng mọi thư viện phụ thuộc riêng và resource để nạp bằng `NETLOAD`.
+2. `FULL_SOURCE` gồm solution, source, UI, assets, test, build recipe và script quản lý thuật toán; không chỉ giao DLL trần nếu tool có phụ thuộc.
+3. `ALGORITHM_INVENTORY.md` chỉ có tên/chức năng thuật toán đang hiện hành và tự sinh lại khi thay đổi; `PROJECT_STATUS.md`, `CHANGELOG.md`, `QA_REPORT.md`.
+4. `README_NETLOAD.md` hướng dẫn mở Civil 3D đúng phiên bản → nhập `NETLOAD` → chọn đúng `CadHost.dll` → nhập tên lệnh CAD → kiểm tra giao diện và chức năng.
+5. Báo cáo `BUILD_PASS`, `NETLOAD_PASS`, `CAD_PASS` riêng biệt, chỉ ghi PASS khi có bằng chứng. Không tuyên bố đã NETLOAD nếu chỉ compile offline.
 
-Quy ước version: `MAJOR.MINOR.PATCH`, một baseline tag cố định. Chỉ ghi “bản phát hành hoàn chỉnh” khi G0–G8 đã có bằng chứng, nếu chỉ G0–G6 thì phải ghi **BUILD CANDIDATE / CHƯA NGHIỆM THU CAD**.
+Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ hướng dẫn logo HDV + tên tiếng Anh đầy đủ trong Palette; không yêu cầu Ribbon hay trình cài.
 
 ## 12. Các lỗi từ dự án cần chặn từ đầu
 
@@ -275,7 +279,6 @@ Quy ước version: `MAJOR.MINOR.PATCH`, một baseline tag cố định. Chỉ 
 | Cắt không giao/đục cống tròn sai | cutting solid không đặc/không đúng Z, thiếu intersection | verify cutter shape, min/max Z và Boolean delta volume |
 | Lỗi khi chuyển nhiều DWG | stale IDs/document context | pin database, reset catalog, revalidate |
 | Solid native thất bại và tool báo xong | chỉ dựa vào API không ném exception | đếm returned IDs, validation hình học, per-job report |
-| Cài EXE xong không thấy Ribbon | bundle/CUIX load hoặc version không khớp | Windows acceptance, CUILOAD, ribbon tab and command |
 | ZIP nhãn “đã build” nhưng thiếu DLL | lẫn source-only với release | artifact hash + file tree + BUILD_PASS evidence |
 
 ## 13. Kiểm tra tình trạng thực tế của các baseline được đọc
@@ -289,4 +292,4 @@ Quy ước version: `MAJOR.MINOR.PATCH`, một baseline tag cố định. Chỉ 
 
 ## 14. Mẫu yêu cầu dùng lại ở mọi hội thoại
 
-> Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại `ALGORITHM_INVENTORY.md` từ `.cs` để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy `--check` trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và gói updater `tool.json` nếu yêu cầu; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.
+> Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại `ALGORITHM_INVENTORY.md` từ `.cs` để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy `--check` trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và metadata tool khi cần; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.
