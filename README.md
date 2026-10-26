@@ -22,3 +22,17 @@
 Bộ này là **tài liệu + hình ảnh + template**, không phải phiên bản mới của DLL SLB/QSL/Solid Cutter hoặc installer. Trong mã nguồn từng tool, việc nhúng logo vào WebView2, CUIX/Ribbon và icon của EXE là bước **triển khai phải làm và test trên Windows/Civil 3D**; không tuyên bố đã thực hiện trong bộ chuẩn này.
 
 **Nguồn kiểm toán:** xem mục 0 trong SOP; ZIP của một số tool bản mới nhất chưa thể đọc byte tại lần tổng hợp v1.0.
+
+## Lấy đủ ảnh gốc và ZIP bàn giao
+
+Các file nhỏ, tài liệu, mẫu giao diện và logo PNG/ICO dùng ngay trên GitHub. Vì giới hạn tải lên của kết nối, **logo HDV gốc 2048×2048** và **ZIP v1.1** được bảo quản dưới dạng các phần `.part001`, `.part002`, ...; từng phần là byte gốc không mất dữ liệu.
+
+Sau khi clone repository, chạy:
+
+```bash
+python scripts/restore_large_assets.py
+```
+
+Lệnh khôi phục `assets/HDV_LOGO_ORIGINAL_2048.png` và `release/C3D_TOOL_STANDARD_V1_1_HDV_LOGO.zip`, xác thực SHA256 tự động. Xem [hướng dẫn file lớn](LARGE_FILES.md).
+
+**Phạm vi:** Đây là tài liệu và bộ nhận diện chuẩn v1.1, không phải source/binary của tất cả các tool SLB, QSL, Cutter, SolidInfo hay SolidLayer.
