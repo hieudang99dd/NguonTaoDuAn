@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'scripts/reference_manager.py'
+      - 'scripts/buildkit_bridge.py'
+      - 'tests/test_buildkit_bridge.py'
       - 'tests/test_reference_manager.py'
       - 'references/**'
       - '.github/workflows/test-reference-manager.yml'
@@ -22,5 +24,7 @@ jobs:
           python-version: '3.11'
       - name: Unit-test local reference import and preflight
         run: python -m unittest discover -s tests -p test_reference_manager.py -v
+      - name: Test BuildKit bridge metadata gates
+        run: python -m unittest discover -s tests -p test_buildkit_bridge.py -v
       - name: Check script syntax
-        run: python -m py_compile scripts/reference_manager.py
+        run: python -m py_compile scripts/reference_manager.py scripts/buildkit_bridge.py
