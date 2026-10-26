@@ -1,0 +1,13 @@
+{
+  "version": "2025",
+  "assembly": "acdbmgdbrep.dll",
+  "namespace": "Autodesk.AutoCAD.BoundaryRepresentation",
+  "requiredFor": [
+    "Brep"
+  ],
+  "usage": "compile-time-reference-only",
+  "copyLocal": false,
+  "source": "licensed Civil 3D 2025 installation or Autodesk SDK",
+  "sampleSha256": "61a95900aa82c41a318e9c0f3feee5fda3c7ee8a9640c0794b5240732a15c67d",
+  "fileCommitted": false
+}
