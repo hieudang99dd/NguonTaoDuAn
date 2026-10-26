@@ -19,7 +19,7 @@ Nguồn được kiểm tra trực tiếp: `HDV_C3D_BuildKit_1_0_OFFLINE.zip` c�
 
 ### Lưu ý quan trọng về thư viện bổ sung
 
-DLL `acdbmgdbrep.dll` được cung cấp riêng có metadata `AssemblyVersion = 25.0.0.0`, nhưng `TargetFramework = .NETCoreApp,Version=v10.0` và x64. **Không được xếp DLL này vào bộ BuildKit Civil 3D 2025 target .NET 8 chỉ dựa trên assembly version.** Cần bản được xác minh tương thích thực sự với host 2025. Công cụ bridge chặn trường hợp sai framework.
+DLL `acdbmgdbrep.dll` được cung cấp riêng có metadata `AssemblyVersion = 25.0.0.0`, nhưng `TargetFramework = .NETCoreApp,Version=v10.0` và x64. **Phân biệt cập nhật:** AutoCAD 2025 trước Update 1.4 dùng .NET 8; AutoCAD 2025 Update 1.4 trở lên dùng .NET 10. DLL này có metadata phù hợp *về framework* với nhánh AutoCAD 2025.1.4+; điều đó chưa chứng minh nguồn phát hành và các dependency đã đồng bộ. Không đưa DLL .NET10 vào **BuildKit v1 vốn cố định net8 cho 2025**, trừ khi nâng cấp cả bộ công cụ build và các tham chiếu tương ứng.
 
 ## Đâu là GitHub, đâu là bộ biên dịch?
 
@@ -46,10 +46,16 @@ python scripts/reference_manager.py import --year 2025 --source "C:\LicensedAuto
 python scripts/buildkit_bridge.py sync --kit "C:\BuildTools\HDV_C3D_BuildKit" --year 2025 --project "C:\Source\Tool\buildkit.project.json"
 ```
 
-`sync` chỉ sao chép các thư viện thực sự được recipe yêu cầu, đã kiểm tra metadata đúng framework và không được phép âm thầm ghi đè bản hash khác. Nếu sai năm/framework, **dừng trước build**.
+`sync` chỉ sao chép các thư viện thực sự được recipe yêu cầu, đã kiểm tra metadata đúng framework và không được phép âm thầm ghi đè bản hash khác. Nếu framework không khớp *runtime của bản cập nhật CAD được chọn*, dừng trước build. Không coi mọi DLL .NET 10 là sai với AutoCAD 2025.
 
 **Kiểm tra giới hạn:** Bridge kiểm tra TFM của DLL được recipe kê khai và tính toàn vẹn payload BuildKit. Không tự xác thực publisher, license, chữ ký Authenticode, API tương thích tuyệt đối hoặc hành vi CAD. Năm 2026 cần BuildKit profile mới; không dùng lại DLL 2025 dưới tên 2026.
 
 ## Chính sách GitHub
 
 Không commit trực tiếp thư viện Autodesk do người dùng cung cấp lên kho public khi chưa có quyền phân phối. Không commit source của dự án nghiệp vụ vào repo tổng quát. Mọi nghiệm thu BUILD / NETLOAD / CAD ghi riêng và gắn với tool tương ứng.
+
+## Đính chính 27/10/2026 — thay đổi quan trọng
+
+Tài liệu Autodesk xác nhận AutoCAD 2025.1.4 và Civil 3D 2025.2.7 (cập nhật tương ứng) đã chuyển sang .NET 10 vào tháng 9/2026. Vì vậy AutoCAD/Civil 3D **2025 có hai profile**: bản cũ .NET8 và bản đã cập nhật .NET10. Các DLL 25.0.0.0 không đủ để chọn profile vì cùng major assembly version. DLL Brep do người dùng gửi nhắm .NET10 là điều phù hợp với hệ 2025 cập nhật, nhưng kiểm tra chữ ký và version các assembly nền tảng trong cùng bộ vẫn cần thiết. Bridge hỗ trợ đọc metadata với `inspect --year 2025 --host-runtime net10`, nhưng với BuildKit 1.0 hiện tại, `build/sync --host-runtime net10` báo thiếu profile build .NET10; **đây là giới hạn BuildKit, không phải lỗi DLL**.
+
+Nguồn chính thức: https://help.autodesk.com/cloudhelp/2025/ENU/AutoCAD-WhatsNew/files/GUID-07450FCA-16CA-4D7A-8EA2-9CE842631D75.htm và https://blog.autodesk.io/autodesk-desktop-products-2025-2026-net-10-updates/ .
