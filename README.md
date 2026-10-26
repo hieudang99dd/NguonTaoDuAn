@@ -81,3 +81,11 @@ Xem [BUILD_ENVIRONMENT.md](BUILD_ENVIRONMENT.md) để biết kết quả kiểm
 **Không nhầm trạng thái:** GitHub đang lưu script kết nối với BuildKit, nhưng **không chứa compiler/runtime/Autodesk API DLL của BuildKit**. Để biên dịch thực sự, hệ thực thi cần được cung cấp bộ `HDV_C3D_BuildKit_1_0_OFFLINE.zip` đầy đủ (hoặc một môi trường build đã thiết lập tương đương).
 
 **Phân biệt 2025 theo cập nhật:** AutoCAD 2025 trước Update 1.4 dùng .NET 8; AutoCAD 2025.1.4+ dùng .NET 10. DLL `acdbmgdbrep.dll` anh cung cấp là `25.0.0.0` và nhắm .NET10; **không thể kết luận sai AutoCAD 2025**. Bộ BuildKit 1.0 đang có chỉ hỗ trợ 2025/net8 và cần nâng cấp profile/framework/references tương ứng để build plugin cho 2025/net10. Xem `BUILD_ENVIRONMENT.md`.
+
+## Civil 3D 2025 — dual runtime (NET8 / NET10)
+
+Xem [C3D2025_DUAL_RUNTIME.md](C3D2025_DUAL_RUNTIME.md): **một mã nguồn, hai cấu hình CadHost** với thư viện tách biệt `references/2025/net8` và `references/2025/net10`. Mẫu multi-target: `templates/C3D2025_DUAL_TARGET.csproj.txt`.
+
+Bộ thư viện gốc `BuildKit 1.0` đã kiểm toán hỗ trợ build 2025/net8, chưa có compiler/reference packs net10 và bộ Autodesk DLL đầy đủ cho 2025/net10. Một CadHost net8 có thể chạy trên host 2025/net10 nhưng **phải thử nghiệm trên cả hai máy**; nếu không đạt, cần hai bộ DLL build độc lập. Không trộn DLL Autodesk .NET8/.NET10 trong một profile.
+
+Sử dụng `python scripts/reference_manager.py import --year 2025 --runtime net8|net10 --source <file.dll>` để nạp thư viện cục bộ theo đúng profile; tránh commit các DLL Autodesk lên repository công khai.
