@@ -1,7 +1,8 @@
 param(
   [Parameter(Mandatory=$true)][ValidateSet(2024,2025,2026)][int]$Year,
   [Parameter(Mandatory=$true)][string]$SourceDll,
-  [switch]$Replace
+  [switch]$Replace,
+  [ValidateSet("net8","net10")][string]$HostRuntime
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
