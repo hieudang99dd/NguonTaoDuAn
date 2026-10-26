@@ -32,7 +32,7 @@ Tool: ___ | Version: ___ | Last update: ___
 | Test | State | Evidence |
 |---|---|---|
 | STATIC | NOT_RUN | |
-| BUILD_2024 | NOT_RUN | |
+| REFERENCE_PREFLIGHT_2024 | NOT_RUN | |\n| REFERENCE_PREFLIGHT_2025 | NOT_RUN | |\n| REFERENCE_PREFLIGHT_2026 | NOT_RUN | |\n| BUILD_2024 | NOT_RUN | |
 | BUILD_2025 | NOT_RUN | |
 | NETLOAD_2024 | NOT_RUN | |
 | NETLOAD_2025 | NOT_RUN | |
