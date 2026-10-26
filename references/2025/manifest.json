@@ -2,7 +2,7 @@
   "schemaVersion": "1.1",
   "host": "Autodesk Civil 3D",
   "year": 2025,
-  "referenceDirectory": "references/2025",
+  "referenceDirectory": "references/2025/<net8|net10> (legacy references/2025 is BuildKit v1 net8 layout)",
   "policy": "project-declared-dependencies",
   "copyLocal": false,
   "storeAutodeskBinariesInGit": false,
@@ -26,14 +26,21 @@
       "id": "net8",
       "hostBuild": "AutoCAD 2025 before Update 1.4",
       "targetFramework": "net8.0-windows",
-      "buildKitV1": true
+      "buildKitV1": true,
+      "referenceDirectory": "references/2025/net8",
+      "outputDirectory": "C3D2025-NET8",
+      "requiresRealHostQA": true
     },
     {
       "id": "net10",
       "hostBuild": "AutoCAD 2025 Update 1.4+ / matched Civil 3D 2025 updates",
       "targetFramework": "net10.0-windows",
-      "buildKitV1": false
+      "buildKitV1": false,
+      "referenceDirectory": "references/2025/net10",
+      "outputDirectory": "C3D2025-NET10",
+      "requiresRealHostQA": true
     }
   ],
-  "notes": "2025 host year alone cannot determine .NET; ensure matching AutoCAD/Civil 3D update and Autodesk assembly family"
+  "notes": "2025 host year alone cannot determine .NET; ensure matching AutoCAD/Civil 3D update and Autodesk assembly family",
+  "legacyBuildKitNote": "Current BuildKit v1 only supports 2025/net8; 2025/net10 needs .NET 10 SDK and a complete matching Autodesk reference set; template is not a validated compiled plugin."
 }
