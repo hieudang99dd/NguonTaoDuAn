@@ -47,7 +47,7 @@ def recipe_references(path):
             requested.add(name.lower())
     return sorted(requested)
 
-def inspect_assembly(kit, dlls, year):
+def inspect_assembly(kit, dlls, year, host_runtime="net8"):
     if not dlls:
         return []
     records = json.loads(run_kit(kit, ["inspect", *[str(p) for p in dlls]], capture=True).stdout)
@@ -61,13 +61,19 @@ def inspect_assembly(kit, dlls, year):
             fail(name + ": x64 reference required; found " + arch)
         if year == 2024 and not re.match(r"^\.NETFramework,Version=v4\.[0-9]+", tfm):
             fail(name + ": target " + tfm + " is not for the 2024 .NET Framework host.")
-        if year == 2025 and tfm != ".NETCoreApp,Version=v8.0":
-            fail(name + ": target " + tfm + " is not for the 2025 .NET 8 host; do not copy.")
+        if year == 2025:
+            if host_runtime not in ("net8", "net10"):
+                fail("Choose net8 for original 2025, or net10 for AutoCAD 2025.1.4+.")
+            expected = ".NETCoreApp,Version=v" + ("8.0" if host_runtime == "net8" else "10.0")
+            if tfm != expected:
+                fail(name + ": target " + tfm + "; selected 2025 runtime " + host_runtime + " expects " + expected)
     return records
 
-def preflight(standard, kit, year, project, sync):
+def preflight(standard, kit, year, project, sync, host_runtime="net8"):
     if year not in YEARS:
         fail("BuildKit v1 supports only 2024/2025; verified 2026 profile is not present.")
+    if year == 2025 and host_runtime == "net10":
+        fail("AutoCAD 2025.1.4+ legitimately uses .NET 10, but supplied BuildKit v1 only compiles net8 for year 2025. Use an upgraded, tested .NET 10 BuildKit and matching Autodesk 2025.1.4+ refs; this does NOT mean the .NET 10 DLL is wrong.")
     target = kit / "references" / str(year)
     shared = standard / "references" / str(year)
     owned = {x.name.lower(): x for x in target.glob("*.dll")}
@@ -81,7 +87,7 @@ def preflight(standard, kit, year, project, sync):
         if old and new and checksum(old) != checksum(new):
             fail("Conflicting hashes for " + name + "; review before overwriting.")
         targets.append((name, old or new, old is None))
-    inspect_assembly(kit, [x[1] for x in targets], year)
+    inspect_assembly(kit, [x[1] for x in targets], year, host_runtime)
     if not sync and any(x[2] for x in targets):
         fail("New compatible references found; run sync before doctor/build.")
     run_kit(kit, ["verify"], capture=True)
@@ -109,6 +115,7 @@ def main():
     ap.add_argument("command", choices=["verify", "inspect", "sync", "doctor", "build"])
     ap.add_argument("--kit", type=Path, required=True)
     ap.add_argument("--year", type=int, default=2025)
+    ap.add_argument("--host-runtime", choices=["net8", "net10"], default="net8", help="AutoCAD 2025 before 1.4: net8; AutoCAD 2025.1.4+: net10 (requires upgraded kit)")
     ap.add_argument("--project", type=Path)
     ap.add_argument("--dll", type=Path)
     ap.add_argument("--out", type=Path)
@@ -122,13 +129,13 @@ def main():
         if a.command == "inspect":
             if a.dll is None:
                 fail("inspect requires --dll")
-            result = inspect_assembly(kit, [a.dll.resolve(strict=True)], a.year)[0]
+            result = inspect_assembly(kit, [a.dll.resolve(strict=True)], a.year, a.host_runtime)[0]
             print(json.dumps({k: result.get(k) for k in ("file", "name", "version", "targetFramework", "machine")}, indent=2))
             return 0
         project = a.project.resolve(strict=True) if a.project else None
         if a.command in ("sync", "build") and not project:
             fail(a.command + " requires --project recipe")
-        preflight(a.standard.resolve(strict=True), kit, a.year, project, a.command == "sync")
+        preflight(a.standard.resolve(strict=True), kit, a.year, project, a.command == "sync", a.host_runtime)
         if a.command in ("doctor", "build"):
             cmd = [a.command, "--year", str(a.year)]
             if project:
