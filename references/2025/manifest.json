@@ -20,5 +20,20 @@
     "compile",
     "NETLOAD in real Civil 3D",
     "DWG functionality"
-  ]
+  ],
+  "frameworkProfiles": [
+    {
+      "id": "net8",
+      "hostBuild": "AutoCAD 2025 before Update 1.4",
+      "targetFramework": "net8.0-windows",
+      "buildKitV1": true
+    },
+    {
+      "id": "net10",
+      "hostBuild": "AutoCAD 2025 Update 1.4+ / matched Civil 3D 2025 updates",
+      "targetFramework": "net10.0-windows",
+      "buildKitV1": false
+    }
+  ],
+  "notes": "2025 host year alone cannot determine .NET; ensure matching AutoCAD/Civil 3D update and Autodesk assembly family"
 }
