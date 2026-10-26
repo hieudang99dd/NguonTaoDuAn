@@ -15,9 +15,14 @@ Tên tool: __________  Version: __________  Command: __________  Chủ sở hữ
 | G4-ALGO-2 | Chạy script cập nhật + `--check` thành công sau mỗi lần sửa, trước build | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G4-ALGO-3 | Thử xóa/gộp/đổi thuật toán: danh mục tự xóa mục cũ, không trùng tên và chức năng đúng mã | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G5 | Document lock/command context/transaction/Undo/SaveAs | NOT_RUN | NOT_RUN | NOT_RUN | |
-| G6-PREFLIGHT | Xác minh DLL đã kê khai, SHA256, metadata TargetFramework và x64 đúng bản cập nhật host (2025: .NET8 hoặc .NET10); không dựa chỉ vào AssemblyVersion | NOT_RUN | NOT_RUN | NOT_RUN | |\n| G6a | BuildKit verify + doctor đúng references | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G6-PREFLIGHT | Xác minh DLL đã kê khai, SHA256, metadata TargetFramework và x64 đúng bản cập nhật host (2025: .NET8 hoặc .NET10); không dựa chỉ vào AssemblyVersion | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G6a | BuildKit verify + doctor đúng references | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G6b | Full build CadHost + dependencies + resources | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G6c | Log sạch, TFM đúng, SHA256, không DLL giả | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G6-2025-NET8 | Build CadHost net8.0-windows với Autodesk references 2025/net8 | N/A | NOT_RUN | N/A | |
+| G6-2025-NET10 | Build CadHost net10.0-windows với Autodesk references 2025/net10 | N/A | NOT_RUN | N/A | |
+| G7-2025-NET8 | NETLOAD + chạy lệnh + thử DWG trên 2025 trước Update 1.4 | N/A | NOT_RUN | N/A | |
+| G7-2025-NET10 | NETLOAD + chạy lệnh + thử DWG trên 2025 Update 1.4+ | N/A | NOT_RUN | N/A | |
 | G7a | NETLOAD CadHost.dll + chạy lệnh, mở PaletteSet | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G7b | WebView2 Runtime, chọn CAD, đổi DWG, đóng/mở palette | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G7c | Kết quả DWG thực chính xác và đối chiếu native | NOT_RUN | NOT_RUN | NOT_RUN | |
