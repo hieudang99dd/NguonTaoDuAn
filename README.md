@@ -21,7 +21,7 @@
 
 Bộ repository hiện tại là **tài liệu + hình ảnh + template**, không phải DLL đã build của các tool. Chuẩn bàn giao sản phẩm từ các dự án tool là **DLL CadHost nạp bằng `NETLOAD` + dependencies/UI cần thiết + full source và báo cáo QA**. 
 
-**Nguồn kiểm toán:** xem mục 0 trong SOP; ZIP của một số tool bản mới nhất chưa thể đọc byte tại lần tổng hợp v1.0.
+**Nguyên tắc:** mọi dự án sử dụng bộ chuẩn phải tự kiểm toán mã nguồn và bằng chứng nghiệm thu của chính mình.
 
 ## Lấy đủ ảnh gốc và ZIP bàn giao
 
@@ -35,11 +35,11 @@ python scripts/restore_large_assets.py
 
 Lệnh khôi phục `assets/HDV_LOGO_ORIGINAL_2048.png` và `release/C3D_TOOL_STANDARD_V1_1_HDV_LOGO.zip`, xác thực SHA256 tự động. Xem [hướng dẫn file lớn](LARGE_FILES.md).
 
-**Phạm vi:** Đây là tài liệu và bộ nhận diện chuẩn v1.1, không phải source/binary của tất cả các tool SLB, QSL, Cutter, SolidInfo hay SolidLayer.
+**Phạm vi:** repository chứa tiêu chuẩn dùng chung, không chứa source, lệnh hoặc DLL nghiệp vụ riêng của bất kỳ tool nào.
 
 ## v1.2 — Danh mục thuật toán hiện hành
 
-- **`ALGORITHM_INVENTORY.md`**: danh mục hiện hành của repo tiêu chuẩn (repo này không có mã nguồn tool, nên 0 thuật toán xác minh; không phải danh sách SLB/QSL).
+- **`ALGORITHM_INVENTORY.md`**: danh mục hiện hành của repo tiêu chuẩn (repo này không có mã nguồn tool, nên 0 thuật toán xác minh; không phải danh sách tool riêng).
 - **`HUONG_DAN_DANH_MUC_THUAT_TOAN.md`**: quy định bắt buộc chỉ giữ tên/chức năng thuật toán trong phiên bản hiện tại.
 - **`scripts/update_algorithm_inventory.py`**: tạo mới toàn bộ bảng từ metadata trong C#, so SHA256, `--check` chặn build/release nếu bị cũ.
 - **`.github/workflows/check-algorithm-inventory.yml`**: kiểm tra đồng bộ trên mỗi push/PR.
@@ -52,3 +52,10 @@ Lệnh khôi phục `assets/HDV_LOGO_ORIGINAL_2048.png` và `release/C3D_TOOL_ST
 - **Trong phạm vi:** đặc tả, thuật toán, UI dockable WebView2, CAD command, build DLL theo năm, test NETLOAD và DWG, source đầy đủ, dependency/resource, bảng thuật toán hiện hành.
 - **Tách dự án:** các hình thức phân phối và tích hợp công cụ được xử lý ngoài bộ quy chuẩn này.
 - **Tiêu chí bàn giao:** một thư mục DLL theo host có thể chọn `CadHost.dll` bằng NETLOAD; không được tuyên bố NETLOAD_PASS khi chưa thử trên Civil 3D thật.
+
+## References Autodesk theo phiên bản, độc lập tool
+
+- `references/<year>/`: chính sách và manifest tham chiếu được dùng cho bất kỳ công cụ nào cần Autodesk API, không giới hạn ở Brep hoặc một DLL cụ thể.
+- `scripts/add_reference.ps1`: nhận tên assembly bất kỳ và năm host, đặt file hợp lệ vào kho tham chiếu cục bộ (DLL không đưa lên Git).
+- Mỗi dự án chọn đúng các tham chiếu mình sử dụng, không ép mọi project dùng toàn bộ thư viện.
+- Tất cả trạng thái build/NETLOAD được nghiệm thu theo từng dự án riêng; repository chuẩn không mang trạng thái thành công của dự án khác.
