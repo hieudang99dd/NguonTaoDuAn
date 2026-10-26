@@ -236,7 +236,7 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 **Đầu ra duy nhất phải chạy được:** `<Tool>.CadHost.dll` cho từng phiên bản Civil 3D được hỗ trợ. Các dependency riêng, UI WebView2, cấu hình, logo và resource cần thiết đặt cùng thư mục theo cấu trúc mà bộ nạp thực tế sử dụng. Không sao chép Autodesk API references từ môi trường build vào output end-user.
 
-**Bàn giao bổ trợ:** mã nguồn đầy đủ, solution, danh mục thuật toán hiện hành, script cập nhật, báo cáo QA, changelog, hướng dẫn NETLOAD. Có thể gom thư mục nguồn và DLL thành ZIP để truyền file, nhưng ZIP **không phải installer**.
+**Bàn giao bổ trợ:** mã nguồn đầy đủ, solution, danh mục thuật toán hiện hành, script cập nhật, báo cáo QA, changelog, hướng dẫn NETLOAD. Có thể gom thư mục nguồn và DLL thành ZIP để truyền file, và giữ nguyên cấu trúc các thư viện cần thiết.
 
 ```text
 Deliverables/
