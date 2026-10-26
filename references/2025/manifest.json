@@ -1,13 +1,21 @@
 {
-  "version": "2025",
-  "assembly": "acdbmgdbrep.dll",
-  "namespace": "Autodesk.AutoCAD.BoundaryRepresentation",
-  "requiredFor": [
-    "Brep"
-  ],
-  "usage": "compile-time-reference-only",
+  "schemaVersion": "1.0",
+  "host": "Autodesk Civil 3D",
+  "year": 2025,
+  "referenceDirectory": "references/2025",
+  "policy": "per-project-dependency-resolution",
+  "assemblyList": "resolved from each project's actual source and build manifest",
   "copyLocal": false,
-  "source": "licensed Civil 3D 2025 installation or Autodesk SDK",
-  "sampleSha256": "61a95900aa82c41a318e9c0f3feee5fda3c7ee8a9640c0794b5240732a15c67d",
-  "fileCommitted": false
+  "storeAutodeskBinariesInGit": false,
+  "validation": [
+    "source-authorization",
+    "assembly-exists",
+    "host-year",
+    "assembly-version",
+    "target-framework",
+    "architecture",
+    "sha256",
+    "build",
+    "netload"
+  ]
 }
