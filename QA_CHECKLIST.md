@@ -22,11 +22,9 @@ Tên tool: __________  Version: __________  Command: __________  Chủ sở hữ
 | G7b | WebView2 Runtime, chọn CAD, đổi DWG, đóng/mở palette | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G7c | Kết quả DWG thực chính xác và đối chiếu native | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G7d | Batch có lỗi một phần, rollback, cleanup, undo | NOT_RUN | NOT_RUN | NOT_RUN | |
-| G8-L1 | Logo/icon hiển thị thực tế trên Ribbon/installer nếu tích hợp, đúng resource và kích thước | NOT_RUN | NOT_RUN | NOT_RUN | |
-| G8 | EXE/bundle/Ribbon + update/uninstall/rollback Windows | NOT_RUN | NOT_RUN | NOT_RUN | |
 
-**Kiểm tra bổ sung:** SHA256 logo gốc trong ZIP phải trùng file người dùng cung cấp; không đánh giá Ribbon/EXE `PASS` khi chưa tích hợp vào binary/Windows.
+**Kiểm tra bổ sung:** SHA256 logo trong source đúng asset chuẩn; DLL CadHost và dependencies/UI có đủ để nạp bằng NETLOAD trên từng phiên bản.
 
 **Ký hiệu:** `PASS`, `FAIL`, `NOT_RUN`, `BLOCKED`, `N/A`. Ghi hostname build, host patch, framework, test DWG, số lượng đối tượng, log/ảnh trước khi đổi `NOT_RUN` thành `PASS`.
 
-**Quy tắc bàn giao:** `BUILD_PASS` không tương đương `NETLOAD_PASS`; `NETLOAD_PASS` không tương đương `CAD_PASS`; mock installer không tương đương `INSTALL_PASS`.
+**Quy tắc bàn giao:** `BUILD_PASS` không tương đương `NETLOAD_PASS`; `NETLOAD_PASS` không tương đương `CAD_PASS`. Không kiểm tra installer/Ribbon.
