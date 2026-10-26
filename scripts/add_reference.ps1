@@ -10,6 +10,8 @@ if (-not (Test-Path -LiteralPath $SourceDll -PathType Leaf)) { throw "Reference 
 $source = (Resolve-Path -LiteralPath $SourceDll).Path
 if ([IO.Path]::GetExtension($source) -ne '.dll') { throw 'Expected a DLL assembly' }
 $destinationFolder = Join-Path $repoRoot ("references\" + $Year)
+if ($HostRuntime -and $Year -ne 2025) { throw 'HostRuntime net8/net10 currently applies only to Civil 3D 2025.' }
+if ($HostRuntime) { $destinationFolder = Join-Path $destinationFolder $HostRuntime }
 New-Item -ItemType Directory -Force -Path $destinationFolder | Out-Null
 $destination = Join-Path $destinationFolder ([IO.Path]::GetFileName($source))
 if (Test-Path -LiteralPath $destination) {
