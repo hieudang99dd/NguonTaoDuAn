@@ -13,8 +13,8 @@
 
 ## 0. Nguồn đầu vào và cấp độ xác minh
 
-- **Đã đọc trực tiếp từ ZIP:** `SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip` (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), `HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip` (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), `HDV_C3D_BuildKit_1_0_OFFLINE.zip` (công cụ biên dịch và manifest), `PROJECT_MASTER_SOURCE.md` và đặc tả `SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md`, `ATGT_Quantity_Revision_Manager_Spec_v1_1.md`.
-- **Phát hiện nhưng chưa đọc trực tiếp byte ZIP tại lần tổng hợp:** QSL v0.8.2, SolidCutterPro v2.3, SolidInfo v4.4, SolidLayer v1.1. Các mục liên quan lấy từ lịch sử yêu cầu/tên phát hành, không suy thành chứng nhận code mới nhất.
+- **Nguồn đầu vào:** mã nguồn, ZIP, đặc tả và tài liệu của từng tool được cung cấp riêng trong mỗi lần triển khai. Repository chuẩn không lấy bất kỳ tool cụ thể nào làm điều kiện bắt buộc.
+- **Chính sách kiểm chứng:** trạng thái, mã nguồn, phụ thuộc và kết quả build phải được kiểm toán độc lập cho từng dự án sử dụng bộ chuẩn.
 - **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
 
 ## 1. Nguyên tắc bất biến
@@ -38,8 +38,8 @@
 - Liệt kê file, version assembly, `CommandMethod`, UI, tài nguyên, tài liệu, kết quả build, hash SHA256.
 - Xác định đúng ZIP baseline (không mặc định file tên mới nhất là bản chạy tốt nhất); tạo `SOURCE_AUDIT.md`, so sánh với yêu cầu mới nhất.
 - Đọc `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `ALGORITHM_INVENTORY.md` (nếu có), các file `.csproj`, `buildkit.project.json`, `tool.json`.
-- Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh CAD giữa các tool. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.
-- Đối chiếu thực tế source và changelog (bản HDVQ 0.7.2 vẫn có README nói “source candidate” dù ZIP đã có DLL: phải cập nhật tài liệu cho đúng artifact thực tế).
+- Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh CAD giữa các tool. Không gán cứng tên lệnh hay nghiệp vụ của bất cứ dự án nào.
+- Đối chiếu trực tiếp mã nguồn, changelog và artifact của chính dự án được tiếp nhận; không kế thừa trạng thái build từ dự án khác.
 
 **Gate G0:** nguồn gốc, phạm vi, hệ phiên bản, lệnh CAD và tình trạng test rõ ràng.
 
@@ -64,9 +64,9 @@ Ràng buộc phải nêu rõ:
 
 **Host mặc định:** `Autodesk.AutoCAD.Windows.PaletteSet` + WPF WebView2; dock trái/phải, thả nổi, cho phép thay đổi chiều rộng; không dùng Windows Form modeless làm giao diện sản phẩm cuối nếu mục tiêu là panel dockable.
 
-**Nhận diện:** nền tối `#15191e`, cam `#f08b36` (tham chiếu SLB), màu phụ trung tính. Dùng **logo HDV được cung cấp tại `assets/HDV_LOGO_ORIGINAL_2048.png`**, không tự vẽ lại, thay màu hoặc đổi chữ; logo đi cạnh **tên tool tiếng Anh đầy đủ**. Tiêu đề/nhãn tác vụ chính vẫn dùng tiếng Việt ngắn gọn, đúng thuật ngữ Civil 3D.
+**Nhận diện:** nền tối `#15191e`, cam `#f08b36` (theo bộ nhận diện chung), màu phụ trung tính. Dùng **logo HDV được cung cấp tại `assets/HDV_LOGO_ORIGINAL_2048.png`**, không tự vẽ lại, thay màu hoặc đổi chữ; logo đi cạnh **tên tool tiếng Anh đầy đủ**. Tiêu đề/nhãn tác vụ chính vẫn dùng tiếng Việt ngắn gọn, đúng thuật ngữ Civil 3D.
 
-**Bố cục:** tiêu đề/logo → chọn nguồn → các điều kiện cần thiết → thao tác → **Kết quả cuối cùng**; vùng điều khiển cuộn riêng và footer hành động/trạng thái cố định. Tham chiếu SLB: palette 430×730, tối thiểu 350×480, kiểm tra ở DPI 100–200%, panel hẹp.
+**Bố cục:** tiêu đề/logo → chọn nguồn → các điều kiện cần thiết → thao tác → **Kết quả cuối cùng**; vùng điều khiển cuộn riêng và footer hành động/trạng thái cố định. Kích thước gợi ý: palette 430×730, tối thiểu 350×480, kiểm tra ở DPI 100–200%, panel hẹp.
 
 **Thành phần bắt buộc tùy nghiệp vụ:**
 - Nút chọn đối tượng trong DWG, chọn tất cả/lọc, danh sách có trạng thái trống/hết dữ liệu; không đưa quá nhiều công tắc kỹ thuật.
@@ -133,11 +133,6 @@ Ràng buộc phải nêu rõ:
 5. Dùng temporary layer/objects có tên độc nhất, quản lý cleanup, không lẫn nguồn/chỉnh sửa file gốc. Khi cleanup thất bại phải báo rõ, không âm thầm trả completed.
 
 **Khác biệt theo nhóm:**
-- **SLB:** có hoặc không có Corridor; bề mặt tham chiếu và so sánh TIN có quyền lấy ngoài Corridor **độc lập**; dùng SurfaceId thực để xác định quan hệ, không so tên; tạo Solid bằng `TinSurface.CreateSolidsAtSurface`; lưu lại cặp nguồn, layer, kết quả; không tự bật engine sửa lưới TIN nếu người dùng đã bỏ yêu cầu này.
-- **Solid Cutter:** phân biệt polyline kín/hở, tim XYZ lấy đúng cao độ đầu/cuối, hướng đục, chiều cao thủ công, solid cống; phải kiểm tra **thể tích/phần giao thực** khi Boolean Subtract. Cống tròn phải dựng khối cắt đặc theo biên dạng ngoài khi cần, không nhầm solid cống rỗng với cutting tool.
-- **Quantity/SolidInfo:** scan 3DSOLID trong phạm vi đã chốt; xử lý nhiều solid cùng layer, lỗi ACIS/volume, đổi đơn vị INSUNITS, fingerprint để phát hiện kết quả cũ khi DWG bị chỉnh sửa; báo cáo Excel và metadata không đổi nguồn trừ khi `Áp dụng`.
-- **SolidLayer:** chọn tất cả/lọc, import Excel map layer/màu, TrueColor và batch operation; thay đổi dữ liệu chỉ khi Áp dụng; xác nhận kết quả thật.
-- **ATGT:** tách nhận dạng block/layer, đối chiếu CAD gốc/sửa, thay đổi hình học, quản lý revision, thống kê và ánh xạ tới Alignment/station/offset. `StationLocationResolver.cs` là phần tử thứ 31 đã chốt trong đặc tả, nhưng đặc tả không phải minh chứng build.
 
 **Gate G4:** unit tests engine + sai số/điều kiện biên; tính đúng đắn theo nghiệp vụ không phụ thuộc UI.
 
@@ -280,14 +275,14 @@ Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ 
 | Solid native thất bại và tool báo xong | chỉ dựa vào API không ném exception | đếm returned IDs, validation hình học, per-job report |
 | ZIP nhãn “đã build” nhưng thiếu DLL | lẫn source-only với release | artifact hash + file tree + BUILD_PASS evidence |
 
-## 13. Kiểm tra tình trạng thực tế của các baseline được đọc
+## 13. Nguyên tắc độc lập dự án
 
-- SLB 4.4.0: đã có 4 project + 2024/2025 DLL và báo cáo offline compiler, 27 mock UI tests; NETLOAD/ACIS chưa thử trên Civil 3D thật.
-- HDVQ Solid Quantity 0.7.2: đã có source và hai thư mục DLL/2024/2025; có thay đổi chẩn đoán WebView2 COM. CadHost bản này dùng WinForms modeless, chưa thể coi đã đạt PaletteSet dockable tiêu chuẩn mới. Tên lệnh source là `HDVQ`, không tự đồng nhất với QSL phiên bản sau.
-- HDV C3D BuildKit 1.0: có compiler portable và Autodesk ref 2024/2025; bản thân nó chưa phải môi trường Civil 3D chạy thật, thiếu tham chiếu AecPropDataMgd 2024, chưa support 2026.
-- ATGT v1.1 và Cutter v1 là tài liệu đặc tả, không tự coi là DLL build.
-- ZIP QSL 0.8.2 / SolidCutter v2.3 / SolidInfo v4.4 / SolidLayer v1.1 chưa đọc được binary tại lần tổng hợp này, phải kiểm tra khi dùng làm baseline triển khai tiếp.
+Repository chỉ quy định quy trình, cấu trúc, công cụ kiểm tra chung và chính sách tham chiếu API. Không lưu tên dự án, lệnh tắt cố định, trạng thái test, nghiệp vụ hoặc DLL biên dịch của bất kỳ tool cụ thể nào như một phần của tiêu chuẩn.
 
 ## 14. Mẫu yêu cầu dùng lại ở mọi hội thoại
 
-> Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại `ALGORITHM_INVENTORY.md` từ `.cs` để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy `--check` trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và metadata tool khi cần; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.
+> Đọc quy trình hiện hành và mã nguồn/đặc tả do người dùng cung cấp trong lần thực hiện này. Kiểm toán nguồn, tạo hoặc sửa tool theo kiến trúc chung, sử dụng logo HDV và giao diện dockable, tự làm mới danh mục thuật toán từ source đang dùng; tìm và xác minh tham chiếu Autodesk đúng phiên bản; build DLL và thư viện phụ thuộc, chỉ xác nhận NETLOAD/CAD_PASS khi chạy thực tế trong Civil 3D. Bàn giao DLL NETLOAD, full source, hướng dẫn và báo cáo.
+
+## 15. Kho tham chiếu Autodesk dùng chung
+
+Thư mục `references/<year>/` là nơi cấu hình tham chiếu build cho **mọi tool**, không gắn với thuật toán hay dự án riêng. Từng project kê khai assembly cần dùng; bước preflight kiểm tra tên file, năm host, runtime/architecture, hash và nguồn hợp lệ trước khi biên dịch. Không mặc định mọi tool đều cần cùng assembly; khi thiếu thư viện phải báo dependency chính xác, không xóa chức năng để ép build. Bản DLL Autodesk được lấy từ nguồn người dùng có quyền sử dụng trên máy build và không commit vào repository công khai. Dùng script tổng quát `scripts/add_reference.ps1` để nhập bất kỳ assembly được cấp phép vào thư mục năm tương ứng. Không sao chép Autodesk API DLL vào gói NETLOAD.
