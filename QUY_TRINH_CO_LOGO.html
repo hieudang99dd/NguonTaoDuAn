@@ -1,179 +1,101 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><title>HDV | C3D Tool Development Standard v1.2</title><style>
-:root{--bg:#101419;--panel:#191f27;--surface:#242b34;--line:#35404b;--text:#e4e9ef;--muted:#9caabb;--orange:#f08b36;--warm:#d7aa75}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 Segoe UI,Arial,sans-serif}
-a{color:#ffc187;text-decoration:none}a:hover{text-decoration:underline}
-.top{display:flex;gap:18px;align-items:center;padding:18px clamp(20px,3vw,54px);border-bottom:1px solid var(--line);background:linear-gradient(135deg,#222831,#11161b);position:sticky;top:0;z-index:4}
-.top img{width:68px;height:68px;object-fit:contain;border-radius:17px;box-shadow:0 5px 14px #0007}
-.top strong{display:block;font-size:19px;letter-spacing:.04em}.top small{color:var(--warm);display:block;font-size:12px;letter-spacing:.11em}
-.layout{display:grid;grid-template-columns:minmax(220px,295px) minmax(0,1fr);max-width:1500px;margin:auto;gap:32px;padding:24px}
-nav{position:sticky;top:118px;max-height:calc(100vh - 142px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;align-self:start}
-.nav-link{display:block;padding:7px 10px;color:#b4c0cc;border-left:2px solid transparent;font-size:12.5px;line-height:1.45}
-.nav-link:hover{background:var(--surface);color:var(--orange);border-left-color:var(--orange);text-decoration:none}
-.nav-link.level-1{font-weight:700;color:#f5c292}
-article{background:var(--panel);border:1px solid var(--line);padding:clamp(22px,4vw,55px);border-radius:16px;min-width:0}
-article>h1:first-child{font-size:clamp(26px,3.1vw,37px);line-height:1.2;border:0;margin-top:0;letter-spacing:.01em}
-article>p:nth-child(2) img{max-width:145px;height:auto;display:block;border-radius:24px;box-shadow:0 8px 32px #0008;margin:16px 0}
-h1,h2,h3{line-height:1.35;scroll-margin-top:110px}h2{color:#f3a966;font-size:22px;margin-top:45px;padding-bottom:12px;border-bottom:1px solid var(--line)}h3{color:#eac39d;font-size:18px;margin-top:30px}
-hr{border:0;border-top:1px solid var(--line)}p,li{overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin-bottom:4px}strong{color:#f3f4f6}
-pre{background:#0d1115;border:1px solid #313b45;padding:15px;overflow:auto;border-radius:9px;line-height:1.5}
-code{font-family:Consolas,Courier New,monospace;font-size:.91em;color:#dcece6}p code,li code,td code{background:#2b3038;padding:1px 5px;border-radius:5px}
-table{width:100%;border-collapse:collapse;display:block;overflow:auto;font-size:13px;margin:20px 0}th,td{border:1px solid var(--line);text-align:left;padding:9px 11px;min-width:125px}th{background:#2a3038;color:#f4ac6d}tbody tr:nth-child(even){background:#1e252d}
-blockquote{padding:12px 18px;border-left:3px solid var(--orange);background:#2b2c2b;margin:18px 0}
-.bottom{font-size:13px;text-align:center;color:var(--muted);padding:35px}
-@media(max-width:880px){.layout{display:block;padding:12px}nav{position:relative;top:auto;max-height:235px;margin-bottom:15px}article{padding:20px}.top{position:relative}.top img{width:52px;height:52px}.top strong{font-size:15px}}
-@media print{body,article{background:white;color:#151515}nav{display:none}.layout{display:block}article{border:0;padding:0}a{color:black}.top{position:static}h2{color:#111}h3{color:#111}pre,code{color:#111}table{font-size:11px}th,td{border-color:#ccc}}
-</style></head><body>
-<header class="top"><img src="assets/HDV_LOGO_256.png" alt="HDV logo chính thức"><div><small>HDV · CIVIL 3D TOOL SYSTEM</small><strong>Quy trình phát triển tool Civil 3D</strong><small>STANDARD OPERATING PROCEDURE · v1.2.0 · 26/10/2026</small></div></header>
-<div class="layout"><nav><strong style="color:#ffc187;font-size:12px">MỤC LỤC</strong>
-<a class="nav-link level-1" href="#c3d-tool-development-standard-quy-trinh-chuan-tao-tool-civil-3d">C3D TOOL DEVELOPMENT STANDARD — QUY TRÌNH CHUẨN TẠO TOOL CIVIL 3D</a>
-<a class="nav-link level-2" href="#0-nguon-au-vao-va-cap-o-xac-minh">0. Nguồn đầu vào và cấp độ xác minh</a>
-<a class="nav-link level-2" href="#1-nguyen-tac-bat-bien">1. Nguyên tắc bất biến</a>
-<a class="nav-link level-2" href="#2-buoc-00-tiep-nhan-khoa-ban-goc">2. Bước 00 — Tiếp nhận, khóa bản gốc</a>
-<a class="nav-link level-2" href="#3-buoc-01-ac-ta-au-vao-au-ra-nghiem-thu">3. Bước 01 — Đặc tả đầu vào → đầu ra → nghiệm thu</a>
-<a class="nav-link level-2" href="#4-buoc-02-thiet-ke-ui-truoc-khi-tich-hop">4. Bước 02 — Thiết kế UI trước khi tích hợp</a>
-<a class="nav-link level-2" href="#5-buoc-03-kien-truc-4-lop-co-inh">5. Bước 03 — Kiến trúc 4 lớp cố định</a>
-<a class="nav-link level-2" href="#6-buoc-04-phat-trien-engine-nghiep-vu">6. Bước 04 — Phát triển engine nghiệp vụ</a>
-<a class="nav-link level-2" href="#7-buoc-05-cadhost-tuong-tac-cad-va-ipc">7. Bước 05 — CadHost, tương tác CAD và IPC</a>
-<a class="nav-link level-2" href="#8-buoc-06-build-theo-host-va-kiem-soat-dependency">8. Bước 06 — Build theo host và kiểm soát dependency</a>
-<a class="nav-link level-2" href="#9-buoc-07-kiem-thu-5-lop-va-nghiem-thu">9. Bước 07 — Kiểm thử 5 lớp và nghiệm thu</a>
-<a class="nav-link level-2" href="#10-buoc-08-ong-goi-3-tang">10. Bước 08 — Đóng gói 3 tầng</a>
-<a class="nav-link level-2" href="#11-buoc-09-ban-giao-va-quan-ly-phien-ban">11. Bước 09 — Bàn giao và quản lý phiên bản</a>
-<a class="nav-link level-2" href="#12-cac-loi-tu-du-an-can-chan-tu-au">12. Các lỗi từ dự án cần chặn từ đầu</a>
-<a class="nav-link level-2" href="#13-kiem-tra-tinh-trang-thuc-te-cua-cac-baseline-uoc-oc">13. Kiểm tra tình trạng thực tế của các baseline được đọc</a>
-<a class="nav-link level-2" href="#14-mau-yeu-cau-dung-lai-o-moi-hoi-thoai">14. Mẫu yêu cầu dùng lại ở mọi hội thoại</a></nav><article><h1 id="c3d-tool-development-standard-quy-trinh-chuan-tao-tool-civil-3d">C3D TOOL DEVELOPMENT STANDARD — QUY TRÌNH CHUẨN TẠO TOOL CIVIL 3D</h1>
-<p><img src="assets/HDV_LOGO_256.png" alt="Logo HDV chính thức" /></p>
-<p><strong>HDV — CIVIL 3D TOOL DEVELOPMENT STANDARD</strong><br />
-<strong>Quy chuẩn nhận diện:</strong> giữ logo HDV gốc, bố trí logo đi cùng <strong>tên tiếng Anh đầy đủ</strong> của từng tool.</p>
-<p><strong>Mã:</strong> C3D-SOP-001<br />
-<strong>Phiên bản:</strong> 1.2.0 — bổ sung quản lý danh mục thuật toán hiện hành tự làm mới<br />
-<strong>Ngày:</strong> 26/10/2026<br />
-<strong>Phạm vi:</strong> các công cụ C#/.NET hoạt động trong Autodesk AutoCAD/Civil 3D, ưu tiên 2024/2025, chuẩn bị mở rộng 2026.<br />
-<strong>Nhãn trạng thái:</strong> TÀI LIỆU QUY TRÌNH / chưa phải DLL mới, chưa thay đổi mã nguồn tool cũ.</p>
-<h2 id="0-nguon-au-vao-va-cap-o-xac-minh">0. Nguồn đầu vào và cấp độ xác minh</h2>
-<ul>
-<li><strong>Đã đọc trực tiếp từ ZIP:</strong> <code>SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip</code> (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), <code>HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip</code> (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), <code>HDV_C3D_BuildKit_1_0_OFFLINE.zip</code> (công cụ biên dịch và manifest), <code>HVDTools_RibbonPro_2025_FULL_SOURCE.zip</code> (mã nguồn installer/updater, tài liệu), <code>PROJECT_MASTER_SOURCE.md</code> và đặc tả <code>SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md</code>, <code>ATGT_Quantity_Revision_Manager_Spec_v1_1.md</code>.</li>
-<li><strong>Phát hiện nhưng chưa đọc trực tiếp byte ZIP tại lần tổng hợp:</strong> QSL v0.8.2, SolidCutterPro v2.3, SolidInfo v4.4, SolidLayer v1.1. Các mục liên quan lấy từ lịch sử yêu cầu/tên phát hành, không suy thành chứng nhận code mới nhất.</li>
-<li><strong>Xác minh cần tách:</strong> mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS), installer/Ribbon thực tế (INSTALL_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.</li>
-</ul>
-<h2 id="1-nguyen-tac-bat-bien">1. Nguyên tắc bất biến</h2>
-<ol>
-<li><strong>Yêu cầu mới nhất là chuẩn chốt:</strong> ưu tiên yêu cầu trực tiếp &gt; yêu cầu hiện hành trong project &gt; file master &gt; mặc định.</li>
-<li><strong>Đọc nguyên bản:</strong> không sửa ZIP trước khi lập danh mục file, mã nguồn, phụ thuộc, API và trạng thái đã nghiệm thu.</li>
-<li><strong>Không phá luồng đã hoạt động:</strong> mỗi chỉnh sửa có ma trận tác động và kiểm thử hồi quy, không tự thêm chế độ ngoài phạm vi.</li>
-<li><strong>Thuật toán ẩn sau giao diện:</strong> UI chỉ chứa đầu vào, lựa chọn, tác vụ, tiến trình, kết quả, không đưa chi tiết hình học/dung sai/cache/solver cho người vận hành.</li>
-<li><strong>Mọi thao tác CAD là giao dịch an toàn:</strong> phân biệt đọc/ghi, đúng Document, command context, transaction, rollback. Không sửa model từ event WebView2.</li>
-<li><strong>Giữ bản vẽ an toàn:</strong> mặc định không xóa/chỉnh dữ liệu nguồn; “Làm mới” chỉ xóa phiên giao diện; “Áp dụng” mới thay đổi DWG, có xác nhận và Undo hợp lý khi có ghi đè/xóa.</li>
-<li><strong>Không báo thành công giả:</strong> không coi không ném exception là thành công; phải xác minh output (ObjectId, loại, số lượng, thể tích, topology hoặc thuộc tính theo đặc thù).</li>
-<li><strong>Không viện cớ thiếu Visual Studio:</strong> kiểm tra HDV C3D BuildKit, chạy <code>verify</code>, <code>doctor</code> rồi build; thiếu tài nguyên phải chỉ rõ file/phiên bản.</li>
-<li><strong>Mã nguồn hoàn chỉnh và artifact build thật:</strong> không đưa file nguồn rời rạc, DLL giả, path ZIP chưa tồn tại hoặc source-only dưới tên built DLL.</li>
-<li><strong>Bắt buộc bảng thuật toán hiện hành:</strong> mỗi tool phải có <code>ALGORITHM_INVENTORY.md</code>, chỉ liệt kê tên và chức năng của thuật toán đang có trong mã nguồn active; sinh lại sau mọi chỉnh sửa, không đưa thuật toán cũ/đã loại bỏ vào tài liệu phát hành.</li>
-<li><strong>Không phân phối Autodesk API DLL trong plugin end-user:</strong> Autodesk references để build nội bộ. Giữ giấy phép, hash, danh sách dependency, không đưa private key/chứng chỉ vào ZIP.</li>
-</ol>
-<h2 id="2-buoc-00-tiep-nhan-khoa-ban-goc">2. Bước 00 — Tiếp nhận, khóa bản gốc</h2>
-<p><strong>Đầu vào:</strong> ZIP cuối, đặc tả, DWG mẫu, logo chính thức <code>assets/HDV_LOGO_ORIGINAL_2048.png</code>, lệnh tắt, host năm, các lỗi tái hiện, tên đầy đủ tiếng Anh và nhãn tiếng Việt.</p>
-<ul>
-<li>Liệt kê file, version assembly, <code>CommandMethod</code>, UI, tài nguyên, tài liệu, kết quả build, hash SHA256.</li>
-<li>Xác định đúng ZIP baseline (không mặc định file tên mới nhất là bản chạy tốt nhất); tạo <code>SOURCE_AUDIT.md</code>, so sánh với yêu cầu mới nhất.</li>
-<li>Đọc <code>README.md</code>, <code>PROJECT_STATUS.md</code>, <code>CHANGELOG.md</code>, <code>ALGORITHM_INVENTORY.md</code> (nếu có), các file <code>.csproj</code>, <code>buildkit.project.json</code>, <code>tool.json</code>.</li>
-<li>Chốt một mã lệnh CAD chính <strong>duy nhất cho mỗi tool</strong>, kiểm tra không trùng lệnh đang cài trong HVDTools/Ribbon. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.</li>
-<li>Đối chiếu thực tế source và changelog (bản HDVQ 0.7.2 vẫn có README nói “source candidate” dù ZIP đã có DLL: phải cập nhật tài liệu cho đúng artifact thực tế).</li>
-</ul>
-<p><strong>Gate G0:</strong> nguồn gốc, phạm vi, hệ phiên bản, lệnh CAD và tình trạng test rõ ràng.</p>
-<h2 id="3-buoc-01-ac-ta-au-vao-au-ra-nghiem-thu">3. Bước 01 — Đặc tả đầu vào → đầu ra → nghiệm thu</h2>
-<p>Tạo <code>FUNCTION_MATRIX.md</code> với bảng:</p>
-<table>
-<thead>
-<tr>
-  <th>ID</th>
-  <th>Đầu vào DWG</th>
-  <th>Tùy chọn UI</th>
-  <th>Engine/use case</th>
-  <th>Output</th>
-  <th>Điều kiện đạt</th>
-  <th>Điều kiện lỗi</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>F01</td>
-  <td>đối tượng hợp lệ</td>
-  <td>lựa chọn cần thiết</td>
-  <td>thuật toán C#</td>
-  <td>Solid/metadata/report</td>
-  <td>output kiểm chứng được</td>
-  <td>hủy, nguồn đổi, giao hình không hợp lệ</td>
-</tr>
-</tbody>
-</table>
-<p>Ràng buộc phải nêu rõ:</p>
-<ul>
-<li>Phạm vi chọn: Model Space, Paper Space, block/Xref, từng đối tượng/nhiều đối tượng/tất cả, lọc theo layer/code/name.</li>
-<li>Hình học: hệ tọa độ WCS/UCS, X/Y/Z đầu-cuối, station/offset, tim tuyến; geometry valid/invalid, vùng hở/kín, dải độ cao, giao cắt, tolerance theo đơn vị.</li>
-<li>Dữ liệu: INSUNITS=0, phân loại m³/m²/cái, xử lý mixed units; nguồn tham chiếu có bị thay đổi hay không.</li>
-<li>Trạng thái dữ liệu: nhiều DWG, Save As, undo/redo, duplicate, stale snapshot, lệnh bị hủy.</li>
-<li>Kết quả: số đối tượng, thể tích, phân loại, layer, màu, metadata, log, Excel và nơi lưu.</li>
-</ul>
-<p><strong>Gate G1:</strong> mỗi chức năng có tình huống đúng/sai/hủy, chấp nhận được bằng DWG thử nghiệm.</p>
-<h2 id="4-buoc-02-thiet-ke-ui-truoc-khi-tich-hop">4. Bước 02 — Thiết kế UI trước khi tích hợp</h2>
-<p><strong>Host mặc định:</strong> <code>Autodesk.AutoCAD.Windows.PaletteSet</code> + WPF WebView2; dock trái/phải, thả nổi, cho phép thay đổi chiều rộng; không dùng Windows Form modeless làm giao diện sản phẩm cuối nếu mục tiêu là panel dockable.</p>
-<p><strong>Nhận diện:</strong> nền tối <code>#15191e</code>, cam <code>#f08b36</code> (tham chiếu SLB), màu phụ trung tính. Dùng <strong>logo HDV được cung cấp tại <code>assets/HDV_LOGO_ORIGINAL_2048.png</code></strong>, không tự vẽ lại, thay màu hoặc đổi chữ; logo đi cạnh <strong>tên tool tiếng Anh đầy đủ</strong>. Tiêu đề/nhãn tác vụ chính vẫn dùng tiếng Việt ngắn gọn, đúng thuật ngữ Civil 3D.</p>
-<p><strong>Bố cục:</strong> tiêu đề/logo → chọn nguồn → các điều kiện cần thiết → thao tác → <strong>Kết quả cuối cùng</strong>; vùng điều khiển cuộn riêng và footer hành động/trạng thái cố định. Tham chiếu SLB: palette 430×730, tối thiểu 350×480, kiểm tra ở DPI 100–200%, panel hẹp.</p>
-<p><strong>Thành phần bắt buộc tùy nghiệp vụ:</strong></p>
-<ul>
-<li>Nút chọn đối tượng trong DWG, chọn tất cả/lọc, danh sách có trạng thái trống/hết dữ liệu; không đưa quá nhiều công tắc kỹ thuật.</li>
-<li><code>Áp dụng</code> ghi lên DWG; <code>Xuất</code> tạo file dữ liệu/Excel riêng; <code>Làm mới</code> reset giao diện và lựa chọn, không xóa/sửa DWG.</li>
-<li>Progress xác định theo đối tượng/cặp/phase thật; nếu không biết tổng thì dùng busy/indeterminate, <strong>không giả %</strong>.</li>
-<li>Lỗi rõ ràng, thông báo số lượng thành công/thất bại, khả năng xem/chọn đối tượng kết quả, không che bản vẽ; giữ kết quả từng phần nếu được phép.</li>
-<li>Mặc định bảng kết quả là bước cuối, không có review trùng, không có slogan “tiện ích cho kỹ sư”, không phô diễn tên thuật toán/dung sai.</li>
-</ul>
-<p><strong>Gate G2:</strong> HTML preview thể hiện đúng luồng và các trạng thái; xác nhận preview không phải ứng dụng CAD thật. <strong>Bắt buộc:</strong> logo HDV chuẩn, tên tool tiếng Anh đầy đủ, hiển thị đúng tại 350–430 px palette; không bị méo/cắt/chồng nút.</p>
-<h3 id="41-chuan-logo-hdv-dung-xuyen-suot-vong-oi-tool-moi-v11">4.1. Chuẩn logo HDV dùng xuyên suốt vòng đời tool (mới v1.1)</h3>
-<table>
-<thead>
-<tr>
-  <th>Điểm xuất hiện</th>
-  <th>Tệp đề xuất</th>
-  <th>Quy tắc bắt buộc</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>Tiêu đề PaletteSet / WebView2</td>
-  <td><code>assets/HDV_LOGO_64.png</code> hoặc <code>_128.png</code></td>
-  <td>Hiển thị logo cạnh <strong>tên tool tiếng Anh đầy đủ</strong>; ảnh <code>object-fit:contain</code>, không méo, không ép toàn bộ tên thành <code>HDV</code></td>
-</tr>
-<tr>
-  <td>Ribbon / thanh công cụ</td>
-  <td><code>assets/HDV_LOGO_32.png</code> (hoặc 16/64 theo hệ icon)</td>
-  <td>Logo thương hiệu thống nhất, <strong>nhãn Ribbon phản ánh đúng nghiệp vụ</strong>; xác minh CUIX/host hỗ trợ định dạng icon; không thay <code>ribbonIcon</code> khi updater chưa hỗ trợ file icon</td>
-</tr>
-<tr>
-  <td>Bộ cài và trình cập nhật</td>
-  <td><code>assets/HDV_TOOLS.ico</code>, <code>_256.png</code></td>
-  <td>Logo hiển thị khi quy trình đóng gói Windows thật hỗ trợ; EXE chỉ được xem là đã nhúng icon sau khi kiểm tra resource trên binary và giao diện thực</td>
-</tr>
-<tr>
-  <td>README / SOP / tài liệu nghiệm thu</td>
-  <td><code>assets/HDV_LOGO_256.png</code></td>
-  <td>Tên nhóm HDV ở đầu tài liệu, ghi chú rõ build/mock/CAD-pass</td>
-</tr>
-<tr>
-  <td>ZIP bàn giao source / deploy</td>
-  <td><code>assets/HDV_LOGO_ORIGINAL_2048.png</code> + PNG nhỏ</td>
-  <td>Asset thuộc package, đường dẫn tương đối ổn định, không phụ thuộc hình từ web</td>
-</tr>
-<tr>
-  <td>Hình xem trước / giới thiệu tool</td>
-  <td><code>_256.png</code> hoặc <code>_512.png</code></td>
-  <td>Giữ màu/độ tương phản/bố cục gốc, không chèn khẩu hiệu hoặc làm biến dạng logo</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Quy tắc triển khai:</strong> file gốc 2048×2048 phải giữ nguyên byte/hash; chỉ thu nhỏ tạo bản cho UI. Tránh kéo giãn, cắt chữ H/D, đổi màu hoặc gắn thêm chữ vào chính file logo. Trong thanh tiêu đề, tách riêng ảnh logo và text tên tool để nội dung chữ luôn sắc nét, không phải xử lý ảnh. Ảnh 16/32 px chỉ là fallback — kiểm tra độ nhận diện ở DPI thực; nếu thiếu rõ ràng, thiết kế icon đơn giản riêng trong một bước được phê duyệt (không tự sửa logo gốc).</p>
-<p><strong>Tích hợp kỹ thuật:</strong> <code>templates/branding.json</code> là metadata hướng dẫn, <strong>không phải schema đã được CadHost hay HVDTools updater hỗ trợ</strong>. Khi triển khai, nhúng image resources ở CadHost/WebView2, hoặc copy theo cấu trúc bundle để UI tìm thấy. Không mặc định đổi trường <code>ribbonIcon: &quot;box&quot;</code> thành đường dẫn PNG: updater hiện tại cần được mở rộng và test Windows trước khi làm vậy. Các namespace lịch sử <code>HDVQ</code>, <code>HVDTools</code> giữ nguyên cho đến khi có migration riêng; việc dùng logo HDV không tự động đổi command hoặc tên assembly.</p>
-<p><strong>Điều kiện nghiệm thu nhận diện:</strong> so ảnh gốc với file trong ZIP bằng SHA256; mở preview; thử panel hẹp/màn hình 100–200% DPI; kiểm tra <code>logo + full English name</code> trên Palette; kiểm tra icon thật trên Ribbon/EXE khi build/cài được; không đánh dấu PASS dựa trên ảnh minh họa.</p>
-<h2 id="5-buoc-03-kien-truc-4-lop-co-inh">5. Bước 03 — Kiến trúc 4 lớp cố định</h2>
-<pre><code class="language-text">&lt;Tool&gt;/
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HDV Civil 3D — DLL NETLOAD Standard v1.3.1</title><style>:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101419;color:#e4e9ef;font:15px/1.65 Segoe UI,Arial,sans-serif}header{position:sticky;top:0;display:flex;align-items:center;gap:16px;padding:16px 5vw;background:#191f27;border-bottom:1px solid #35404b}header img{width:56px;height:56px;object-fit:contain}strong{color:#f08b36}main{max-width:1120px;margin:auto;padding:26px 5vw}article{white-space:pre-wrap;overflow-wrap:anywhere;padding:28px;border:1px solid #35404b;background:#191f27;border-radius:14px;line-height:1.85}footer{padding:30px 5vw;color:#9caabb;text-align:center}</style></head><body><header><img src="assets/HDV_LOGO_64.png" alt="HDV"><div><strong>HDV — Civil 3D Tool Development Standard</strong><div>NETLOAD DLL · v1.3.1 · Tài liệu hiện hành</div></div></header><main><article># C3D TOOL DEVELOPMENT STANDARD — QUY TRÌNH CHUẨN TẠO TOOL CIVIL 3D
+
+![Logo HDV chính thức](assets/HDV_LOGO_256.png)
+
+**HDV — CIVIL 3D TOOL DEVELOPMENT STANDARD**  
+**Quy chuẩn nhận diện:** giữ logo HDV gốc, bố trí logo đi cùng **tên tiếng Anh đầy đủ** của từng tool.
+
+**Mã:** C3D-SOP-001  
+**Phiên bản:** 1.3.0 — chỉ phát triển và bàn giao DLL NETLOAD — bổ sung quản lý danh mục thuật toán hiện hành tự làm mới  
+**Ngày:** 26/10/2026  
+**Phạm vi:** các công cụ C#/.NET hoạt động trong Autodesk AutoCAD/Civil 3D, ưu tiên 2024/2025, chuẩn bị mở rộng 2026.  
+**Nhãn trạng thái:** TÀI LIỆU QUY TRÌNH / chưa phải DLL mới, chưa thay đổi mã nguồn tool cũ.
+
+## 0. Nguồn đầu vào và cấp độ xác minh
+
+- **Đã đọc trực tiếp từ ZIP:** `SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip` (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), `HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip` (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), `HDV_C3D_BuildKit_1_0_OFFLINE.zip` (công cụ biên dịch và manifest), `PROJECT_MASTER_SOURCE.md` và đặc tả `SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md`, `ATGT_Quantity_Revision_Manager_Spec_v1_1.md`.
+- **Phát hiện nhưng chưa đọc trực tiếp byte ZIP tại lần tổng hợp:** QSL v0.8.2, SolidCutterPro v2.3, SolidInfo v4.4, SolidLayer v1.1. Các mục liên quan lấy từ lịch sử yêu cầu/tên phát hành, không suy thành chứng nhận code mới nhất.
+- **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
+
+## 1. Nguyên tắc bất biến
+
+1. **Yêu cầu mới nhất là chuẩn chốt:** ưu tiên yêu cầu trực tiếp &gt; yêu cầu hiện hành trong project &gt; file master &gt; mặc định.
+2. **Đọc nguyên bản:** không sửa ZIP trước khi lập danh mục file, mã nguồn, phụ thuộc, API và trạng thái đã nghiệm thu.
+3. **Không phá luồng đã hoạt động:** mỗi chỉnh sửa có ma trận tác động và kiểm thử hồi quy, không tự thêm chế độ ngoài phạm vi.
+4. **Thuật toán ẩn sau giao diện:** UI chỉ chứa đầu vào, lựa chọn, tác vụ, tiến trình, kết quả, không đưa chi tiết hình học/dung sai/cache/solver cho người vận hành.
+5. **Mọi thao tác CAD là giao dịch an toàn:** phân biệt đọc/ghi, đúng Document, command context, transaction, rollback. Không sửa model từ event WebView2.
+6. **Giữ bản vẽ an toàn:** mặc định không xóa/chỉnh dữ liệu nguồn; “Làm mới” chỉ xóa phiên giao diện; “Áp dụng” mới thay đổi DWG, có xác nhận và Undo hợp lý khi có ghi đè/xóa.
+7. **Không báo thành công giả:** không coi không ném exception là thành công; phải xác minh output (ObjectId, loại, số lượng, thể tích, topology hoặc thuộc tính theo đặc thù).
+8. **Không viện cớ thiếu Visual Studio:** kiểm tra HDV C3D BuildKit, chạy `verify`, `doctor` rồi build; thiếu tài nguyên phải chỉ rõ file/phiên bản.
+9. **Mã nguồn hoàn chỉnh và artifact build thật:** không đưa file nguồn rời rạc, DLL giả, path ZIP chưa tồn tại hoặc source-only dưới tên built DLL.
+10. **Bắt buộc bảng thuật toán hiện hành:** mỗi tool phải có `ALGORITHM_INVENTORY.md`, chỉ liệt kê tên và chức năng của thuật toán đang có trong mã nguồn active; sinh lại sau mọi chỉnh sửa, không đưa thuật toán cũ/đã loại bỏ vào tài liệu phát hành.
+11. **Không phân phối Autodesk API DLL trong plugin end-user:** Autodesk references để build nội bộ. Giữ giấy phép, hash, danh sách dependency, không đưa private key/chứng chỉ vào ZIP.
+
+## 2. Bước 00 — Tiếp nhận, khóa bản gốc
+
+**Đầu vào:** ZIP cuối, đặc tả, DWG mẫu, logo chính thức `assets/HDV_LOGO_ORIGINAL_2048.png`, lệnh tắt, host năm, các lỗi tái hiện, tên đầy đủ tiếng Anh và nhãn tiếng Việt.
+
+- Liệt kê file, version assembly, `CommandMethod`, UI, tài nguyên, tài liệu, kết quả build, hash SHA256.
+- Xác định đúng ZIP baseline (không mặc định file tên mới nhất là bản chạy tốt nhất); tạo `SOURCE_AUDIT.md`, so sánh với yêu cầu mới nhất.
+- Đọc `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `ALGORITHM_INVENTORY.md` (nếu có), các file `.csproj`, `buildkit.project.json`, `tool.json`.
+- Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh CAD của các tool liên quan. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.
+- Đối chiếu thực tế source và changelog (bản HDVQ 0.7.2 vẫn có README nói “source candidate” dù ZIP đã có DLL: phải cập nhật tài liệu cho đúng artifact thực tế).
+
+**Gate G0:** nguồn gốc, phạm vi, hệ phiên bản, lệnh CAD và tình trạng test rõ ràng.
+
+## 3. Bước 01 — Đặc tả đầu vào → đầu ra → nghiệm thu
+
+Tạo `FUNCTION_MATRIX.md` với bảng:
+
+| ID | Đầu vào DWG | Tùy chọn UI | Engine/use case | Output | Điều kiện đạt | Điều kiện lỗi |
+|---|---|---|---|---|---|---|
+| F01 | đối tượng hợp lệ | lựa chọn cần thiết | thuật toán C# | Solid/metadata/report | output kiểm chứng được | hủy, nguồn đổi, giao hình không hợp lệ |
+
+Ràng buộc phải nêu rõ:
+- Phạm vi chọn: Model Space, Paper Space, block/Xref, từng đối tượng/nhiều đối tượng/tất cả, lọc theo layer/code/name.
+- Hình học: hệ tọa độ WCS/UCS, X/Y/Z đầu-cuối, station/offset, tim tuyến; geometry valid/invalid, vùng hở/kín, dải độ cao, giao cắt, tolerance theo đơn vị.
+- Dữ liệu: INSUNITS=0, phân loại m³/m²/cái, xử lý mixed units; nguồn tham chiếu có bị thay đổi hay không.
+- Trạng thái dữ liệu: nhiều DWG, Save As, undo/redo, duplicate, stale snapshot, lệnh bị hủy.
+- Kết quả: số đối tượng, thể tích, phân loại, layer, màu, metadata, log, Excel và nơi lưu.
+
+**Gate G1:** mỗi chức năng có tình huống đúng/sai/hủy, chấp nhận được bằng DWG thử nghiệm.
+
+## 4. Bước 02 — Thiết kế UI trước khi tích hợp
+
+**Host mặc định:** `Autodesk.AutoCAD.Windows.PaletteSet` + WPF WebView2; dock trái/phải, thả nổi, cho phép thay đổi chiều rộng; không dùng Windows Form modeless làm giao diện sản phẩm cuối nếu mục tiêu là panel dockable.
+
+**Nhận diện:** nền tối `#15191e`, cam `#f08b36` (tham chiếu SLB), màu phụ trung tính. Dùng **logo HDV được cung cấp tại `assets/HDV_LOGO_ORIGINAL_2048.png`**, không tự vẽ lại, thay màu hoặc đổi chữ; logo đi cạnh **tên tool tiếng Anh đầy đủ**. Tiêu đề/nhãn tác vụ chính vẫn dùng tiếng Việt ngắn gọn, đúng thuật ngữ Civil 3D.
+
+**Bố cục:** tiêu đề/logo → chọn nguồn → các điều kiện cần thiết → thao tác → **Kết quả cuối cùng**; vùng điều khiển cuộn riêng và footer hành động/trạng thái cố định. Tham chiếu SLB: palette 430×730, tối thiểu 350×480, kiểm tra ở DPI 100–200%, panel hẹp.
+
+**Thành phần bắt buộc tùy nghiệp vụ:**
+- Nút chọn đối tượng trong DWG, chọn tất cả/lọc, danh sách có trạng thái trống/hết dữ liệu; không đưa quá nhiều công tắc kỹ thuật.
+- `Áp dụng` ghi lên DWG; `Xuất` tạo file dữ liệu/Excel riêng; `Làm mới` reset giao diện và lựa chọn, không xóa/sửa DWG.
+- Progress xác định theo đối tượng/cặp/phase thật; nếu không biết tổng thì dùng busy/indeterminate, **không giả %**.
+- Lỗi rõ ràng, thông báo số lượng thành công/thất bại, khả năng xem/chọn đối tượng kết quả, không che bản vẽ; giữ kết quả từng phần nếu được phép.
+- Mặc định bảng kết quả là bước cuối, không có review trùng, không có slogan “tiện ích cho kỹ sư”, không phô diễn tên thuật toán/dung sai.
+
+**Gate G2:** HTML preview thể hiện đúng luồng và các trạng thái; xác nhận preview không phải ứng dụng CAD thật. **Bắt buộc:** logo HDV chuẩn, tên tool tiếng Anh đầy đủ, hiển thị đúng tại 350–430 px palette; không bị méo/cắt/chồng nút.
+
+
+### 4.1. Chuẩn logo HDV trong giao diện tool và tài liệu
+
+| Điểm xuất hiện | Tệp đề xuất | Quy tắc bắt buộc |
+|---|---|---|
+| Tiêu đề PaletteSet / WebView2 | `assets/HDV_LOGO_64.png` hoặc `_128.png` | Hiển thị logo cạnh **tên tool tiếng Anh đầy đủ**; ảnh `object-fit:contain`, không méo, không ép toàn bộ tên thành `HDV` |
+| README / SOP / tài liệu nghiệm thu | `assets/HDV_LOGO_256.png` | Tên nhóm HDV ở đầu tài liệu, ghi chú rõ build/mock/CAD-pass |
+| ZIP bàn giao source / deploy | `assets/HDV_LOGO_ORIGINAL_2048.png` + PNG nhỏ | Asset thuộc package, đường dẫn tương đối ổn định, không phụ thuộc hình từ web |
+
+**Quy tắc triển khai:** file gốc 2048×2048 phải giữ nguyên byte/hash; chỉ thu nhỏ tạo bản cho UI. Tránh kéo giãn, cắt chữ H/D, đổi màu hoặc gắn thêm chữ vào chính file logo. Trong thanh tiêu đề, tách riêng ảnh logo và text tên tool để nội dung chữ luôn sắc nét. Ảnh 16/32 px chỉ là fallback — kiểm tra độ nhận diện ở DPI thực; nếu thiếu rõ ràng, thiết kế icon đơn giản riêng trong một bước được phê duyệt (không tự sửa logo gốc).
+
+**Tích hợp kỹ thuật:** `templates/branding.json` là metadata nhận diện dùng tham khảo, chưa tự động liên kết với CadHost. Nhúng logo vào resource WebView2/CadHost hoặc chép ảnh theo đường dẫn tương đối trong thư mục NETLOAD; xác minh logo hiển thị khi chạy thực.
+
+**Điều kiện nghiệm thu nhận diện:** xác minh SHA256 logo nguồn, giao diện dock 350–430 px và DPI 100–200%, logo cạnh tên tiếng Anh đầy đủ trên PaletteSet; chỉ đánh dấu PASS khi kiểm tra được giao diện thực.
+
+## 5. Bước 03 — Kiến trúc 4 lớp cố định
+
+```text
+&lt;Tool&gt;/
 ├── &lt;Tool&gt;.sln / &lt;Tool&gt;.slnx
 ├── src/
 │   ├── &lt;Tool&gt;.Domain/                # models, value objects, quy tắc thuần
@@ -183,224 +105,190 @@ blockquote{padding:12px 18px;border-left:3px solid var(--orange);background:#2b2
 │       ├── Commands/                # hàng đợi, CommandMethod, transaction
 │       ├── Cad/                     # adapters và truy cập Document/Database
 │       └── UI/web/                  # HTML/CSS/JS và assets
-├── assets/                          # Logo HDV gốc + icon nhiều kích thước
+├── assets/                          # Logo HDV cho UI và tài liệu
 ├── tests/                           # unit, contract, UI mock, integration
 ├── docs/                            # SOP áp dụng, quyết định, QA, changelog
 ├── buildkit.project.json            # recipe portable năm host
-├── tool.json                        # metadata cho Ribbon/installer (schema hiện hành)
+├── tool.json                        # metadata tên, phiên bản, lệnh và DLL NETLOAD
 ├── branding.json                    # hướng dẫn nhận diện, chưa có runtime binding
 ├── ALGORITHM_INVENTORY.md           # file sinh tự động: tên + chức năng thuật toán còn hiệu lực
 ├── scripts/update_algorithm_inventory.py
 ├── PROJECT_STATUS.md
 └── README.md
-</code></pre>
-<p><strong>Ranh giới:</strong> Domain không phụ thuộc Autodesk DLL/WebView2. Application không gọi UI/CAD trực tiếp. Infrastructure triển khai interface có thể test độc lập. CadHost là adapter duy nhất chạm API Civil 3D, command context và PaletteSet. Với các thuật toán phụ thuộc trực tiếp AutoCAD geometry, tách <code>CadHost/Cad</code> hoặc một adapter host-specific; không cố ép chúng vào lớp thuần.</p>
-<p><strong>Giao tiếp:</strong> <code>WebRequest {requestId, action, payload, documentContext}</code> → validate → CadCommandQueue → CadActionDispatcher → engine → <code>WebResponse {requestId,status,payload,error}</code>. Trạng thái: <code>accepted/progress/completed/failed/cancelled</code>; chống double click, ghi log và không xử lý response cũ vào DWG khác.</p>
-<p><strong>Gate G3:</strong> chức năng map một-một từ nút UI đến handler và kết quả; mock IPC chạy được không cần Civil 3D.</p>
-<h2 id="6-buoc-04-phat-trien-engine-nghiep-vu">6. Bước 04 — Phát triển engine nghiệp vụ</h2>
-<p><strong>Đối với tất cả tool:</strong></p>
-<ol>
-<li>Validation đầu vào trước khi giao dịch, đủ thông tin lỗi cho từng đối tượng.</li>
-<li>Nếu có API Native Autodesk đúng ý nghĩa nghiệp vụ thì ưu tiên sử dụng; không tự viết lại solver hình học khi không cần.</li>
-<li>Các bộ xử lý dài phải có progress/cancel an toàn, log định danh công việc, xử lý lỗi từng phần hoặc atomic theo yêu cầu.</li>
-<li>Trước commit, xác minh kết quả thật: type, số lượng, thuộc tính, hình học/vùng giao/volume, không xóa kết quả đã commit khi tác vụ khác thất bại.</li>
-<li>Dùng temporary layer/objects có tên độc nhất, quản lý cleanup, không lẫn nguồn/chỉnh sửa file gốc. Khi cleanup thất bại phải báo rõ, không âm thầm trả completed.</li>
-</ol>
-<p><strong>Khác biệt theo nhóm:</strong></p>
-<ul>
-<li><strong>SLB:</strong> có hoặc không có Corridor; bề mặt tham chiếu và so sánh TIN có quyền lấy ngoài Corridor <strong>độc lập</strong>; dùng SurfaceId thực để xác định quan hệ, không so tên; tạo Solid bằng <code>TinSurface.CreateSolidsAtSurface</code>; lưu lại cặp nguồn, layer, kết quả; không tự bật engine sửa lưới TIN nếu người dùng đã bỏ yêu cầu này.</li>
-<li><strong>Solid Cutter:</strong> phân biệt polyline kín/hở, tim XYZ lấy đúng cao độ đầu/cuối, hướng đục, chiều cao thủ công, solid cống; phải kiểm tra <strong>thể tích/phần giao thực</strong> khi Boolean Subtract. Cống tròn phải dựng khối cắt đặc theo biên dạng ngoài khi cần, không nhầm solid cống rỗng với cutting tool.</li>
-<li><strong>Quantity/SolidInfo:</strong> scan 3DSOLID trong phạm vi đã chốt; xử lý nhiều solid cùng layer, lỗi ACIS/volume, đổi đơn vị INSUNITS, fingerprint để phát hiện kết quả cũ khi DWG bị chỉnh sửa; báo cáo Excel và metadata không đổi nguồn trừ khi <code>Áp dụng</code>.</li>
-<li><strong>SolidLayer:</strong> chọn tất cả/lọc, import Excel map layer/màu, TrueColor và batch operation; thay đổi dữ liệu chỉ khi Áp dụng; xác nhận kết quả thật.</li>
-<li><strong>ATGT:</strong> tách nhận dạng block/layer, đối chiếu CAD gốc/sửa, thay đổi hình học, quản lý revision, thống kê và ánh xạ tới Alignment/station/offset. <code>StationLocationResolver.cs</code> là phần tử thứ 31 đã chốt trong đặc tả, nhưng đặc tả không phải minh chứng build.</li>
-</ul>
-<p><strong>Gate G4:</strong> unit tests engine + sai số/điều kiện biên; tính đúng đắn theo nghiệp vụ không phụ thuộc UI.</p>
-<h3 id="61-danh-muc-thuat-toan-hien-hanh-bat-buoc-tu-v12">6.1. Danh mục thuật toán hiện hành — bắt buộc từ v1.2</h3>
-<p><strong>Mỗi tool phải có đúng một file <code>ALGORITHM_INVENTORY.md</code> tại thư mục gốc.</strong> File chỉ ghi <strong>tên thuật toán</strong> và <strong>chức năng</strong> hiện đang có trong mã nguồn được đóng gói, không phải bảng lịch sử hoặc danh sách thuật toán dự kiến. Ví dụ định dạng:</p>
-<table>
-<thead>
-<tr>
-  <th>Tên thuật toán</th>
-  <th>Chức năng</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td><code>SurfaceSolidCreator</code></td>
-  <td>Tạo khối Solid bằng API Civil 3D từ bề mặt đã chọn.</td>
-</tr>
-</tbody>
-</table>
-<p><em>Hàng ví dụ ở trên chỉ để minh họa cấu trúc; không phải xác nhận một thuật toán đang tồn tại trong tool cụ thể.</em></p>
-<p><strong>Vòng đời cập nhật tuyệt đối:</strong></p>
-<ol>
-<li>Thêm thuật toán mới → gắn metadata nguồn <code>// HDV-ALGO-NAME:</code> và <code>// HDV-ALGO-FUNCTION:</code> ngay trong <code>.cs</code>, sau đó <strong>sinh lại file</strong>.</li>
-<li>Sửa tên, thay đổi logic hoặc chức năng → cập nhật phần mô tả metadata phù hợp với triển khai, <strong>sinh lại toàn bộ file</strong>, không nối thêm các mục cũ.</li>
-<li>Xóa/thay thế/gộp thuật toán → xóa mã nguồn cũ khỏi bản nguồn hiện hành, sinh lại danh mục; các mục đã xóa <strong>tự biến mất</strong>, không hiển thị <code>Deprecated</code>, <code>Legacy</code>, <code>Old</code> trong danh mục hiện hành.</li>
-<li>Khi chưa xác thực mã nguồn, ghi rõ danh mục chưa được kiểm kê; <strong>không tự dựng danh sách theo tên ZIP/đặc tả</strong>.</li>
-<li>Sau mỗi lần sửa, trước mỗi build, trước commit và trước đóng ZIP, bắt buộc chạy công cụ cập nhật/kiểm tra. <code>--check</code> phải trả về mã 0; nếu sai phải chặn release.</li>
-</ol>
-<p><strong>Quy ước tối thiểu trong file <code>.cs</code> thực thi thuật toán:</strong></p>
-<pre><code class="language-csharp">// HDV-ALGO-NAME: SurfaceSolidCreator
+```
+
+**Ranh giới:** Domain không phụ thuộc Autodesk DLL/WebView2. Application không gọi UI/CAD trực tiếp. Infrastructure triển khai interface có thể test độc lập. CadHost là adapter duy nhất chạm API Civil 3D, command context và PaletteSet. Với các thuật toán phụ thuộc trực tiếp AutoCAD geometry, tách `CadHost/Cad` hoặc một adapter host-specific; không cố ép chúng vào lớp thuần.
+
+**Giao tiếp:** `WebRequest {requestId, action, payload, documentContext}` → validate → CadCommandQueue → CadActionDispatcher → engine → `WebResponse {requestId,status,payload,error}`. Trạng thái: `accepted/progress/completed/failed/cancelled`; chống double click, ghi log và không xử lý response cũ vào DWG khác.
+
+**Gate G3:** chức năng map một-một từ nút UI đến handler và kết quả; mock IPC chạy được không cần Civil 3D.
+
+## 6. Bước 04 — Phát triển engine nghiệp vụ
+
+**Đối với tất cả tool:**
+1. Validation đầu vào trước khi giao dịch, đủ thông tin lỗi cho từng đối tượng.
+2. Nếu có API Native Autodesk đúng ý nghĩa nghiệp vụ thì ưu tiên sử dụng; không tự viết lại solver hình học khi không cần.
+3. Các bộ xử lý dài phải có progress/cancel an toàn, log định danh công việc, xử lý lỗi từng phần hoặc atomic theo yêu cầu.
+4. Trước commit, xác minh kết quả thật: type, số lượng, thuộc tính, hình học/vùng giao/volume, không xóa kết quả đã commit khi tác vụ khác thất bại.
+5. Dùng temporary layer/objects có tên độc nhất, quản lý cleanup, không lẫn nguồn/chỉnh sửa file gốc. Khi cleanup thất bại phải báo rõ, không âm thầm trả completed.
+
+**Khác biệt theo nhóm:**
+- **SLB:** có hoặc không có Corridor; bề mặt tham chiếu và so sánh TIN có quyền lấy ngoài Corridor **độc lập**; dùng SurfaceId thực để xác định quan hệ, không so tên; tạo Solid bằng `TinSurface.CreateSolidsAtSurface`; lưu lại cặp nguồn, layer, kết quả; không tự bật engine sửa lưới TIN nếu người dùng đã bỏ yêu cầu này.
+- **Solid Cutter:** phân biệt polyline kín/hở, tim XYZ lấy đúng cao độ đầu/cuối, hướng đục, chiều cao thủ công, solid cống; phải kiểm tra **thể tích/phần giao thực** khi Boolean Subtract. Cống tròn phải dựng khối cắt đặc theo biên dạng ngoài khi cần, không nhầm solid cống rỗng với cutting tool.
+- **Quantity/SolidInfo:** scan 3DSOLID trong phạm vi đã chốt; xử lý nhiều solid cùng layer, lỗi ACIS/volume, đổi đơn vị INSUNITS, fingerprint để phát hiện kết quả cũ khi DWG bị chỉnh sửa; báo cáo Excel và metadata không đổi nguồn trừ khi `Áp dụng`.
+- **SolidLayer:** chọn tất cả/lọc, import Excel map layer/màu, TrueColor và batch operation; thay đổi dữ liệu chỉ khi Áp dụng; xác nhận kết quả thật.
+- **ATGT:** tách nhận dạng block/layer, đối chiếu CAD gốc/sửa, thay đổi hình học, quản lý revision, thống kê và ánh xạ tới Alignment/station/offset. `StationLocationResolver.cs` là phần tử thứ 31 đã chốt trong đặc tả, nhưng đặc tả không phải minh chứng build.
+
+**Gate G4:** unit tests engine + sai số/điều kiện biên; tính đúng đắn theo nghiệp vụ không phụ thuộc UI.
+
+### 6.1. Danh mục thuật toán hiện hành — bắt buộc từ v1.2
+
+**Mỗi tool phải có đúng một file `ALGORITHM_INVENTORY.md` tại thư mục gốc.** File chỉ ghi **tên thuật toán** và **chức năng** hiện đang có trong mã nguồn được đóng gói, không phải bảng lịch sử hoặc danh sách thuật toán dự kiến. Ví dụ định dạng:
+
+| Tên thuật toán | Chức năng |
+|---|---|
+| `SurfaceSolidCreator` | Tạo khối Solid bằng API Civil 3D từ bề mặt đã chọn. |
+
+*Hàng ví dụ ở trên chỉ để minh họa cấu trúc; không phải xác nhận một thuật toán đang tồn tại trong tool cụ thể.*
+
+**Vòng đời cập nhật tuyệt đối:**
+
+1. Thêm thuật toán mới → gắn metadata nguồn `// HDV-ALGO-NAME:` và `// HDV-ALGO-FUNCTION:` ngay trong `.cs`, sau đó **sinh lại file**.
+2. Sửa tên, thay đổi logic hoặc chức năng → cập nhật phần mô tả metadata phù hợp với triển khai, **sinh lại toàn bộ file**, không nối thêm các mục cũ.
+3. Xóa/thay thế/gộp thuật toán → xóa mã nguồn cũ khỏi bản nguồn hiện hành, sinh lại danh mục; các mục đã xóa **tự biến mất**, không hiển thị `Deprecated`, `Legacy`, `Old` trong danh mục hiện hành.
+4. Khi chưa xác thực mã nguồn, ghi rõ danh mục chưa được kiểm kê; **không tự dựng danh sách theo tên ZIP/đặc tả**.
+5. Sau mỗi lần sửa, trước mỗi build, trước commit và trước đóng ZIP, bắt buộc chạy công cụ cập nhật/kiểm tra. `--check` phải trả về mã 0; nếu sai phải chặn release.
+
+**Quy ước tối thiểu trong file `.cs` thực thi thuật toán:**
+
+```csharp
+// HDV-ALGO-NAME: SurfaceSolidCreator
 // HDV-ALGO-FUNCTION: Tạo Solid từ bề mặt đang chọn bằng API Civil 3D.
 public sealed class SurfaceSolidCreator
 {
     // Thuật toán thực tế nằm trong project.
 }
-</code></pre>
-<p><strong>Lệnh chuẩn tại thư mục gốc của từng tool:</strong></p>
-<pre><code class="language-bash">python scripts/update_algorithm_inventory.py --source-root src
+```
+
+**Lệnh chuẩn tại thư mục gốc của từng tool:**
+
+```bash
+python scripts/update_algorithm_inventory.py --source-root src
 python scripts/update_algorithm_inventory.py --source-root src --check
-</code></pre>
-<p>Công cụ được phát kèm tại <code>scripts/update_algorithm_inventory.py</code>, tạo lại file theo metadata trong mã <code>.cs</code>, đối chiếu SHA256 từng nguồn để phát hiện mọi thay đổi, sắp xếp tên nhất quán và chặn tên trùng. File nguồn trong thư mục <code>Algorithms/</code> mà thiếu metadata sẽ bị báo lỗi, không bị bỏ qua âm thầm. Nếu project dùng quy tắc <code>Compile Include/Remove</code> phức tạp, cần cung cấp danh sách file thực sự biên dịch với <code>--compiled-files</code>; Python scan không thay thế việc MSBuild đánh giá đầy đủ project. Mỗi <code>.cs</code> có thể chứa nhiều cặp metadata tương ứng nhiều thuật toán.</p>
-<p><strong>Giới hạn xác minh:</strong> công cụ phát hiện thay đổi mã và đồng bộ danh sách, nhưng không tự suy luận được ý nghĩa thuật toán C#. Người sửa mã phải kiểm tra lại câu mô tả chức năng; QA có nhiệm vụ đối chiếu tên, chức năng với triển khai. Lịch sử phiên bản được quản lý bằng Git, không sao chép thuật toán cũ vào file hiện hành. Không bắt buộc xóa lịch sử commit.</p>
-<p><strong>Gate G4-ALGO:</strong> danh mục tạo từ nguồn đúng phiên bản, không trùng tên, không có mục đã bị loại, <code>--check</code> PASS, mô tả chức năng được duyệt. Nếu không đủ bằng chứng, không đóng dấu ALGORITHM_INVENTORY_PASS.</p>
-<h2 id="7-buoc-05-cadhost-tuong-tac-cad-va-ipc">7. Bước 05 — CadHost, tương tác CAD và IPC</h2>
-<ul>
-<li><code>CommandMethod(&quot;LENH_CHINH&quot;)</code> là lệnh duy nhất để gọi tool; lệnh nội bộ chẩn đoán tách khỏi thao tác sản phẩm, tránh va chạm lệnh giữa nhiều plugin.</li>
-<li>Chỉ truy cập Autodesk Database/Editor trong ngữ cảnh lệnh hợp lệ (<code>ExecuteInCommandContextAsync</code> hoặc cơ chế CAD command được kiểm chứng), không trong callback WebView2 thread. Thao tác modeless cần document context và <code>DocumentLock</code> khi thích hợp.</li>
-<li>Mỗi batch/transaction phải theo <strong>đúng DWG đã chọn</strong>; kiểm tra database identity mỗi lần chạy. Không cache <code>ObjectId</code> giữa session; Handle phải resolve/validate, không mặc định bền vững giữa clone/copy.</li>
-<li><code>Transaction</code>/rollback theo phạm vi đơn hàng/cặp; <code>Undo</code> có kết quả có thể hoàn tác; chọn đối tượng bằng <code>Editor.GetSelection</code> có xử lý Cancel; không kéo theo UI treo/ẩn không mở lại.</li>
-<li>Khi DocumentActivated/DocumentDestroyed/SaveAs/Units thay đổi: invalidation catalog/snapshot; không hiển thị báo cáo của DWG cũ.</li>
-<li>JSON IPC phải versioned; reject payload không hợp lệ và request trùng, không sử dụng <code>crypto.randomUUID</code> khi WebView2 có opaque origin trừ khi có fallback.</li>
-</ul>
-<p><strong>Gate G5:</strong> UI mock và contract tests; không exception xuyên cầu giao tiếp, không đụng DWG khác.</p>
-<h2 id="8-buoc-06-build-theo-host-va-kiem-soat-dependency">8. Bước 06 — Build theo host và kiểm soát dependency</h2>
-<table>
-<thead>
-<tr>
-  <th>Civil 3D</th>
-  <th>Target mặc định</th>
-  <th>Điều kiện</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>2024</td>
-  <td><code>net48</code></td>
-  <td>Autodesk references 2024 (AutoCAD 24.3), plugin x64</td>
-</tr>
-<tr>
-  <td>2025</td>
-  <td><code>net8.0-windows</code></td>
-  <td>Autodesk references 2025 (25.0); kiểm tra bản Update/.NET transition thực tế</td>
-</tr>
-<tr>
-  <td>2026</td>
-  <td>profile riêng theo bản update</td>
-  <td>Kiểm tra .NET 8 hoặc .NET 10 và Autodesk references 2026; BuildKit v1 chưa hỗ trợ 2026</td>
-</tr>
-</tbody>
-</table>
-<p><strong>BuildKit ưu tiên:</strong> giải nén <code>HDV_C3D_BuildKit_1_0_OFFLINE.zip</code>; xem <code>START_HERE.md</code>, <code>BUILD_GUIDE.md</code>, <code>PAYLOAD_SHA256.json</code>. Chạy theo thứ tự:</p>
-<pre><code class="language-bash">python3 scripts/build.py verify
+```
+
+Công cụ được phát kèm tại `scripts/update_algorithm_inventory.py`, tạo lại file theo metadata trong mã `.cs`, đối chiếu SHA256 từng nguồn để phát hiện mọi thay đổi, sắp xếp tên nhất quán và chặn tên trùng. File nguồn trong thư mục `Algorithms/` mà thiếu metadata sẽ bị báo lỗi, không bị bỏ qua âm thầm. Nếu project dùng quy tắc `Compile Include/Remove` phức tạp, cần cung cấp danh sách file thực sự biên dịch với `--compiled-files`; Python scan không thay thế việc MSBuild đánh giá đầy đủ project. Mỗi `.cs` có thể chứa nhiều cặp metadata tương ứng nhiều thuật toán.
+
+**Giới hạn xác minh:** công cụ phát hiện thay đổi mã và đồng bộ danh sách, nhưng không tự suy luận được ý nghĩa thuật toán C#. Người sửa mã phải kiểm tra lại câu mô tả chức năng; QA có nhiệm vụ đối chiếu tên, chức năng với triển khai. Lịch sử phiên bản được quản lý bằng Git, không sao chép thuật toán cũ vào file hiện hành. Không bắt buộc xóa lịch sử commit.
+
+**Gate G4-ALGO:** danh mục tạo từ nguồn đúng phiên bản, không trùng tên, không có mục đã bị loại, `--check` PASS, mô tả chức năng được duyệt. Nếu không đủ bằng chứng, không đóng dấu ALGORITHM_INVENTORY_PASS.
+
+## 7. Bước 05 — CadHost, tương tác CAD và IPC
+
+- `CommandMethod("LENH_CHINH")` là lệnh duy nhất để gọi tool; lệnh nội bộ chẩn đoán tách khỏi thao tác sản phẩm, tránh va chạm lệnh giữa nhiều plugin.
+- Chỉ truy cập Autodesk Database/Editor trong ngữ cảnh lệnh hợp lệ (`ExecuteInCommandContextAsync` hoặc cơ chế CAD command được kiểm chứng), không trong callback WebView2 thread. Thao tác modeless cần document context và `DocumentLock` khi thích hợp.
+- Mỗi batch/transaction phải theo **đúng DWG đã chọn**; kiểm tra database identity mỗi lần chạy. Không cache `ObjectId` giữa session; Handle phải resolve/validate, không mặc định bền vững giữa clone/copy.
+- `Transaction`/rollback theo phạm vi đơn hàng/cặp; `Undo` có kết quả có thể hoàn tác; chọn đối tượng bằng `Editor.GetSelection` có xử lý Cancel; không kéo theo UI treo/ẩn không mở lại.
+- Khi DocumentActivated/DocumentDestroyed/SaveAs/Units thay đổi: invalidation catalog/snapshot; không hiển thị báo cáo của DWG cũ.
+- JSON IPC phải versioned; reject payload không hợp lệ và request trùng, không sử dụng `crypto.randomUUID` khi WebView2 có opaque origin trừ khi có fallback.
+
+**Gate G5:** UI mock và contract tests; không exception xuyên cầu giao tiếp, không đụng DWG khác.
+
+## 8. Bước 06 — Build theo host và kiểm soát dependency
+
+| Civil 3D | Target mặc định | Điều kiện |
+|---|---|---|
+| 2024 | `net48` | Autodesk references 2024 (AutoCAD 24.3), plugin x64 |
+| 2025 | `net8.0-windows` | Autodesk references 2025 (25.0); kiểm tra bản Update/.NET transition thực tế |
+| 2026 | profile riêng theo bản update | Kiểm tra .NET 8 hoặc .NET 10 và Autodesk references 2026; BuildKit v1 chưa hỗ trợ 2026 |
+
+**BuildKit ưu tiên:** giải nén `HDV_C3D_BuildKit_1_0_OFFLINE.zip`; xem `START_HERE.md`, `BUILD_GUIDE.md`, `PAYLOAD_SHA256.json`. Chạy theo thứ tự:
+
+```bash
+python3 scripts/build.py verify
 python3 scripts/build.py doctor --year 2024 --project /path/to/Tool/buildkit.project.json
 python3 scripts/build.py build --project /path/to/Tool/buildkit.project.json --year 2024 --out /path/to/dist/2024
 python3 scripts/build.py doctor --year 2025 --project /path/to/Tool/buildkit.project.json
 python3 scripts/build.py build --project /path/to/Tool/buildkit.project.json --year 2025 --out /path/to/dist/2025
-</code></pre>
-<p>Trên Windows sử dụng <code>build.cmd</code>/<code>build.ps1</code> tương ứng theo tài liệu kit. <code>verify</code> xác nhận hash; <code>doctor</code> kiểm tra tham chiếu theo năm; <code>build</code> dùng Roslyn portable, <strong>không đồng nghĩa MSBuild</strong>. Nếu dự án dùng XAML/RESX/code generators/COM interop/NuGet khác recipe, chuyển qua pipeline VS/MSBuild có đầy đủ targeting packs và reference thật. Không tạo DLL thiếu resource chỉ để compile đạt.</p>
-<p><strong>Quy tắc phụ thuộc:</strong> <code>AcMgd</code>, <code>AcDbMgd</code>, <code>AcCoreMgd</code>, <code>AecBaseMgd</code>, <code>AeccDbMgd</code> theo đúng năm; <code>AecPropDataMgd</code> chỉ khi cần và đúng năm (bộ kit v1 thiếu <code>AecPropDataMgd</code> 2024). Autodesk references có <code>Private=false</code>/CopyLocal=false. Đóng gói đúng WebView2 Core/Wpf hoặc WinForms tùy host, loader x64, HTML/CSS/JS, Newtonsoft.Json/ClosedXML nếu sử dụng. WebView2 <strong>SDK DLL không thay thế Edge WebView2 Runtime</strong> của Windows.</p>
-<p><strong>Trước mỗi build:</strong> <code>python scripts/update_algorithm_inventory.py --source-root src --check</code>; nếu FAIL thì dừng build đến khi tái tạo và kiểm tra danh mục.</p>
-<p><strong>Gate G6:</strong> 0 compile error, danh sách warning công khai, result.json, compiler log, metadata DLL/TFM, dll/dependencies/UI đầy đủ; không chép API Autodesk DLL làm thư viện chạy end-user.</p>
-<h2 id="9-buoc-07-kiem-thu-5-lop-va-nghiem-thu">9. Bước 07 — Kiểm thử 5 lớp và nghiệm thu</h2>
-<p><strong>A. Static/Unit:</strong> compile, phân tích API, unit engine; sai lệch số học, dữ liệu trống, unicode, filename, layer, mã nguồn đầy đủ. Kiểm tra <code>ALGORITHM_INVENTORY.md</code> trùng khớp metadata mã nguồn, không có thuật toán bị thay thế.</p>
-<p><strong>B. IPC/UI:</strong> mọi action, click/refresh/cancel, hàng đợi, dock/narrow, scrolling, overlay, preview vs CAD, lỗi <code>crypto.randomUUID</code>.</p>
-<p><strong>C. NETLOAD trên Windows:</strong> host năm đúng, <code>NETLOAD</code> CadHost, gọi lệnh, PaletteSet hiển thị, chọn được trong CAD, thư viện WebView2 load được. Nếu trắng trang: dùng chẩn đoán WebView2 Runtime, HRESULT, loader và profile <code>%LOCALAPPDATA%</code>, không tự suy là lỗi geometry.</p>
-<p><strong>D. CAD/DWG:</strong> DWG chuẩn/lỗi/nặng, nhiều DWG, chuyển tài liệu, ctrl+Z/undo, save/open, Xref, block, layer trùng tên, INSUNITS=0, WCS/UCS, các hình học sát/không giao/biên, các solid lớn và solid trụ/cống, chạy batch có phần thất bại. So output với công cụ Civil 3D Native khi nghiệp vụ tương đương.</p>
-<p><strong>E. Installer/Ribbon:</strong> chạy EXE trên máy Windows thử, xác minh đường dẫn bundle/cuiX, tab BIM TUYẾN và nhóm đúng, icon/tên đầy đủ, tự động load sau khởi động lại, update/thêm tool/rollback/uninstall, SECURELOAD/TRUSTEDPATHS giữ an toàn. Không khẳng định cài được nếu mới test mô phỏng CUIX trên Linux.</p>
-<p><strong>Gate G7:</strong> chỉ <code>CAD_PASS</code> khi có test thực trên đúng phiên bản; chỉ <code>INSTALL_PASS</code> khi EXE/Ribbon được kiểm tra thực trên Windows/C3D.</p>
-<h2 id="10-buoc-08-ong-goi-3-tang">10. Bước 08 — Đóng gói 3 tầng</h2>
-<p><strong>Tầng 1 — Source package:</strong> <code>ALGORITHM_INVENTORY.md</code> đã cập nhật, <code>scripts/update_algorithm_inventory.py</code>, solution, toàn bộ <code>.cs</code>/UI/assets (bao gồm logo HDV gốc và biến thể nhỏ), recipe, tests, docs, license, hash, đầy đủ file bổ trợ; không kèm private key.</p>
-<p><strong>Tầng 2 — NETLOAD package (mỗi năm):</strong> thư mục có <code>*.CadHost.dll</code>, <code>Domain/Application/Infrastructure</code>, WebView2 assemblies/loader và UI/assets bao gồm logo HDV nếu không embedded, config, hướng dẫn NETLOAD, báo cáo phiên bản; không trộn 2024 với 2025.</p>
-<p><strong>Tầng 3 — Product installation:</strong> <code>tool.json</code>, <code>.bundle/PackageContents.xml</code>, CUIX/Ribbon hoặc RibbonHost, logo/icon Windows được build và xác minh, setup EXE/updater, installer log, backup/rollback. Update plugin riêng phải không ghi đè plugin khác cùng command ID.</p>
-<p><strong>tool.json mẫu:</strong> xem <code>templates/tool.json</code> (chỉ là mẫu, cần sửa <code>id</code>, <code>command</code>, <code>entryAssembly</code>, <code>supportedYears</code> đúng bản tool đã nghiệm thu).</p>
-<p><strong>Gate G8:</strong> bản tải về có nội dung thật, hash SHA256 và cây file kiểm tra được, cài đặt/reinstall/upgrade không làm mất plugin khác.</p>
-<h2 id="11-buoc-09-ban-giao-va-quan-ly-phien-ban">11. Bước 09 — Bàn giao và quản lý phiên bản</h2>
-<p>Bàn giao tối thiểu:</p>
-<ol>
-<li><code>Tool_FULL_SOURCE_&lt;version&gt;.zip</code>.</li>
-<li><code>Tool_NETLOAD_C3D2024_&lt;version&gt;.zip</code> và <code>Tool_NETLOAD_C3D2025_&lt;version&gt;.zip</code> (chỉ khi đã build).</li>
-<li><code>Tool_Setup_&lt;version&gt;.exe</code> hoặc <code>.bundle</code> (chỉ khi đã tạo); mọi file cần cài có trong payload.</li>
-<li><code>QA_REPORT.md</code> có ma trận 6 trạng thái; không đánh tráo MOCK thành CAD test.</li>
-<li><code>CHANGELOG.md</code>, <code>PROJECT_STATUS.md</code>, <code>ALGORITHM_INVENTORY.md</code> (tên + chức năng <strong>hiện hành</strong>), script tự làm mới, <code>README_NETLOAD.md</code>, <code>SHA256SUMS.txt</code>.</li>
-<li><code>CommandMethod</code> chính + tên đầy đủ tiếng Anh + <strong>logo HDV theo asset chuẩn</strong> + menu Ribbon chuẩn (nếu tích hợp thật).</li>
-<li>Phương án nâng cấp/thêm tool: <code>Incoming/&lt;tool&gt;.zip</code> với <code>tool.json</code>, đóng CAD, updater, khởi động lại, verify command.</li>
-</ol>
-<p>Quy ước version: <code>MAJOR.MINOR.PATCH</code>, một baseline tag cố định. Chỉ ghi “bản phát hành hoàn chỉnh” khi G0–G8 đã có bằng chứng, nếu chỉ G0–G6 thì phải ghi <strong>BUILD CANDIDATE / CHƯA NGHIỆM THU CAD</strong>.</p>
-<h2 id="12-cac-loi-tu-du-an-can-chan-tu-au">12. Các lỗi từ dự án cần chặn từ đầu</h2>
-<table>
-<thead>
-<tr>
-  <th>Lỗi đã gặp</th>
-  <th>Nguyên nhân/rủi ro</th>
-  <th>Tiêu chuẩn ngăn tái diễn</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>DLL có nhưng NETLOAD không được</td>
-  <td>host/runtime/API sai, dependency thiếu</td>
-  <td>build matrix theo năm + smoke test trên Windows</td>
-</tr>
-<tr>
-  <td>WebView2 trắng/Class not registered</td>
-  <td>WebView2 runtime COM hoặc loader/profile</td>
-  <td>preflight Runtime/HRESULT, log, không che lỗi</td>
-</tr>
-<tr>
-  <td>Làm mới xóa dữ liệu CAD</td>
-  <td>phân biệt UI state và DWG state không rõ</td>
-  <td>Reset UI-only, transaction chỉ khi Áp dụng</td>
-</tr>
-<tr>
-  <td>Toolbar/kết quả bị che khi dock hẹp</td>
-  <td>CSS thiếu scroll/fixed footer, DPI</td>
-  <td>resize/DPI matrix, footer cố định</td>
-</tr>
-<tr>
-  <td>Số lượng Solid sai khi cùng layer</td>
-  <td>grouping/selection/filter sai</td>
-  <td>test 21 Solid cùng layer, compare ObjectId/volume</td>
-</tr>
-<tr>
-  <td>Cắt không giao/đục cống tròn sai</td>
-  <td>cutting solid không đặc/không đúng Z, thiếu intersection</td>
-  <td>verify cutter shape, min/max Z và Boolean delta volume</td>
-</tr>
-<tr>
-  <td>Lỗi khi chuyển nhiều DWG</td>
-  <td>stale IDs/document context</td>
-  <td>pin database, reset catalog, revalidate</td>
-</tr>
-<tr>
-  <td>Solid native thất bại và tool báo xong</td>
-  <td>chỉ dựa vào API không ném exception</td>
-  <td>đếm returned IDs, validation hình học, per-job report</td>
-</tr>
-<tr>
-  <td>Cài EXE xong không thấy Ribbon</td>
-  <td>bundle/CUIX load hoặc version không khớp</td>
-  <td>Windows acceptance, CUILOAD, ribbon tab and command</td>
-</tr>
-<tr>
-  <td>ZIP nhãn “đã build” nhưng thiếu DLL</td>
-  <td>lẫn source-only với release</td>
-  <td>artifact hash + file tree + BUILD_PASS evidence</td>
-</tr>
-</tbody>
-</table>
-<h2 id="13-kiem-tra-tinh-trang-thuc-te-cua-cac-baseline-uoc-oc">13. Kiểm tra tình trạng thực tế của các baseline được đọc</h2>
-<ul>
-<li>SLB 4.4.0: đã có 4 project + 2024/2025 DLL và báo cáo offline compiler, 27 mock UI tests; NETLOAD/ACIS chưa thử trên Civil 3D thật.</li>
-<li>HDVQ Solid Quantity 0.7.2: đã có source và hai thư mục DLL/2024/2025; có thay đổi chẩn đoán WebView2 COM. CadHost bản này dùng WinForms modeless, chưa thể coi đã đạt PaletteSet dockable tiêu chuẩn mới. Tên lệnh source là <code>HDVQ</code>, không tự đồng nhất với QSL phiên bản sau.</li>
-<li>HDV C3D BuildKit 1.0: có compiler portable và Autodesk ref 2024/2025; bản thân nó chưa phải môi trường Civil 3D chạy thật, thiếu tham chiếu AecPropDataMgd 2024, chưa support 2026.</li>
-<li>HVDTools RibbonPro 2025: có source installer/updater, tool.json và kiểm thử giả lập; chưa nghiệm thu tự động hiển thị Ribbon với Civil 3D Windows.</li>
-<li>ATGT v1.1 và Cutter v1 là tài liệu đặc tả, không tự coi là DLL build.</li>
-<li>ZIP QSL 0.8.2 / SolidCutter v2.3 / SolidInfo v4.4 / SolidLayer v1.1 chưa đọc được binary tại lần tổng hợp này, phải kiểm tra khi dùng làm baseline triển khai tiếp.</li>
-</ul>
-<h2 id="14-mau-yeu-cau-dung-lai-o-moi-hoi-thoai">14. Mẫu yêu cầu dùng lại ở mọi hội thoại</h2>
-<blockquote>
-<p>Đọc <code>PROJECT_MASTER_SOURCE.md</code> và <code>QUY_TRINH_CHUAN_TOOL_CIVIL3D.md</code>. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu <code>HUONG_DAN_SU_DUNG_LOGO_HDV.md</code>), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại <code>ALGORITHM_INVENTORY.md</code> từ <code>.cs</code> để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy <code>--check</code> trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và gói updater <code>tool.json</code> nếu yêu cầu; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.</p>
-</blockquote>
-</article></div><footer class="bottom">HDV Civil 3D Tool Development Standard · Tài liệu quy trình · v1.2</footer></body></html>
+```
+
+Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu kit. `verify` xác nhận hash; `doctor` kiểm tra tham chiếu theo năm; `build` dùng Roslyn portable, **không đồng nghĩa MSBuild**. Nếu dự án dùng XAML/RESX/code generators/COM interop/NuGet khác recipe, chuyển qua pipeline VS/MSBuild có đầy đủ targeting packs và reference thật. Không tạo DLL thiếu resource chỉ để compile đạt.
+
+**Quy tắc phụ thuộc:** `AcMgd`, `AcDbMgd`, `AcCoreMgd`, `AecBaseMgd`, `AeccDbMgd` theo đúng năm; `AecPropDataMgd` chỉ khi cần và đúng năm (bộ kit v1 thiếu `AecPropDataMgd` 2024). Autodesk references có `Private=false`/CopyLocal=false. Đóng gói đúng WebView2 Core/Wpf hoặc WinForms tùy host, loader x64, HTML/CSS/JS, Newtonsoft.Json/ClosedXML nếu sử dụng. WebView2 **SDK DLL không thay thế Edge WebView2 Runtime** của Windows.
+
+**Trước mỗi build:** `python scripts/update_algorithm_inventory.py --source-root src --check`; nếu FAIL thì dừng build đến khi tái tạo và kiểm tra danh mục.
+
+**Gate G6:** 0 compile error, danh sách warning công khai, result.json, compiler log, metadata DLL/TFM, dll/dependencies/UI đầy đủ; không chép API Autodesk DLL làm thư viện chạy end-user.
+
+## 9. Bước 07 — Kiểm thử 4 lớp và nghiệm thu
+
+**A. Static/Unit:** compile, phân tích API, unit engine; sai lệch số học, dữ liệu trống, unicode, filename, layer, mã nguồn đầy đủ. Kiểm tra `ALGORITHM_INVENTORY.md` trùng khớp metadata mã nguồn, không có thuật toán bị thay thế.
+
+**B. IPC/UI:** mọi action, click/refresh/cancel, hàng đợi, dock/narrow, scrolling, overlay, preview vs CAD, lỗi `crypto.randomUUID`.
+
+**C. NETLOAD trên Windows:** host năm đúng, `NETLOAD` CadHost, gọi lệnh, PaletteSet hiển thị, chọn được trong CAD, thư viện WebView2 load được. Nếu trắng trang: dùng chẩn đoán WebView2 Runtime, HRESULT, loader và profile `%LOCALAPPDATA%`, không tự suy là lỗi geometry.
+
+**D. CAD/DWG:** DWG chuẩn/lỗi/nặng, nhiều DWG, chuyển tài liệu, ctrl+Z/undo, save/open, Xref, block, layer trùng tên, INSUNITS=0, WCS/UCS, các hình học sát/không giao/biên, các solid lớn và solid trụ/cống, chạy batch có phần thất bại. So output với công cụ Civil 3D Native khi nghiệp vụ tương đương.
+
+**Gate G7:** chỉ xác nhận `NETLOAD_PASS` sau khi nạp DLL trong Civil 3D đúng phiên bản, gọi lệnh thực và mở UI; chỉ `CAD_PASS` khi kiểm thử kết quả trên DWG thật. Nghiệm thu dừng ở NETLOAD và nghiệp vụ CAD.
+
+## 10. Bước 08 — Chuẩn bị DLL nạp NETLOAD (không đóng gói installer)
+
+**Đầu ra duy nhất phải chạy được:** `&lt;Tool&gt;.CadHost.dll` cho từng phiên bản Civil 3D được hỗ trợ. Các dependency riêng, UI WebView2, cấu hình, logo và resource cần thiết đặt cùng thư mục theo cấu trúc mà bộ nạp thực tế sử dụng. Không sao chép Autodesk API references từ môi trường build vào output end-user.
+
+**Bàn giao bổ trợ:** mã nguồn đầy đủ, solution, danh mục thuật toán hiện hành, script cập nhật, báo cáo QA, changelog, hướng dẫn NETLOAD. Có thể gom thư mục nguồn và DLL thành ZIP để truyền file, nhưng ZIP **không phải installer**.
+
+```text
+Deliverables/
+├── C3D2024/
+│   ├── &lt;Tool&gt;.CadHost.dll
+│   ├── &lt;Tool&gt;.Domain.dll / &lt;Tool&gt;.Application.dll / &lt;Tool&gt;.Infrastructure.dll (nếu tách DLL)
+│   └── dependencies + UI + assets + config (nếu cần)
+├── C3D2025/
+│   └── &lt;Tool&gt;.CadHost.dll + các dependency/runtime assets tương ứng
+├── C3D2026/ (chỉ khi đã build và xác nhận tương thích)
+├── SOURCE/ (solution + mã nguồn + scripts + tài liệu)
+└── README_NETLOAD.md
+```
+
+**Điều kiện đạt:** file DLL thực tồn tại, kiểm tra đúng runtime/bitness/API refs, tập hợp đủ dependency, ghi lệnh CAD và đường dẫn DLL, không có kết quả build giả. `BUILD_PASS` là có DLL hợp lệ; `NETLOAD_PASS` đòi hỏi kiểm tra trên Civil 3D thực tế.
+
+
+## 11. Bước 09 — Bàn giao và quản lý phiên bản
+
+Bàn giao tối thiểu:
+
+1. `&lt;Tool&gt;.CadHost.dll` theo từng host năm **đã build thành công**, cùng mọi thư viện phụ thuộc riêng và resource để nạp bằng `NETLOAD`.
+2. `FULL_SOURCE` gồm solution, source, UI, assets, test, build recipe và script quản lý thuật toán; không chỉ giao DLL trần nếu tool có phụ thuộc.
+3. `ALGORITHM_INVENTORY.md` chỉ có tên/chức năng thuật toán đang hiện hành và tự sinh lại khi thay đổi; `PROJECT_STATUS.md`, `CHANGELOG.md`, `QA_REPORT.md`.
+4. `README_NETLOAD.md` hướng dẫn mở Civil 3D đúng phiên bản → nhập `NETLOAD` → chọn đúng `CadHost.dll` → nhập tên lệnh CAD → kiểm tra giao diện và chức năng.
+5. Báo cáo `BUILD_PASS`, `NETLOAD_PASS`, `CAD_PASS` riêng biệt, chỉ ghi PASS khi có bằng chứng. Không tuyên bố đã NETLOAD nếu chỉ compile offline.
+
+Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ hướng dẫn logo HDV + tên tiếng Anh đầy đủ trong Palette; không yêu cầu Ribbon hay trình cài.
+
+## 12. Các lỗi từ dự án cần chặn từ đầu
+
+| Lỗi đã gặp | Nguyên nhân/rủi ro | Tiêu chuẩn ngăn tái diễn |
+|---|---|---|
+| DLL có nhưng NETLOAD không được | host/runtime/API sai, dependency thiếu | build matrix theo năm + smoke test trên Windows |
+| WebView2 trắng/Class not registered | WebView2 runtime COM hoặc loader/profile | preflight Runtime/HRESULT, log, không che lỗi |
+| Làm mới xóa dữ liệu CAD | phân biệt UI state và DWG state không rõ | Reset UI-only, transaction chỉ khi Áp dụng |
+| Toolbar/kết quả bị che khi dock hẹp | CSS thiếu scroll/fixed footer, DPI | resize/DPI matrix, footer cố định |
+| Số lượng Solid sai khi cùng layer | grouping/selection/filter sai | test 21 Solid cùng layer, compare ObjectId/volume |
+| Cắt không giao/đục cống tròn sai | cutting solid không đặc/không đúng Z, thiếu intersection | verify cutter shape, min/max Z và Boolean delta volume |
+| Lỗi khi chuyển nhiều DWG | stale IDs/document context | pin database, reset catalog, revalidate |
+| Solid native thất bại và tool báo xong | chỉ dựa vào API không ném exception | đếm returned IDs, validation hình học, per-job report |
+| ZIP nhãn “đã build” nhưng thiếu DLL | lẫn source-only với release | artifact hash + file tree + BUILD_PASS evidence |
+
+## 13. Kiểm tra tình trạng thực tế của các baseline được đọc
+
+- SLB 4.4.0: đã có 4 project + 2024/2025 DLL và báo cáo offline compiler, 27 mock UI tests; NETLOAD/ACIS chưa thử trên Civil 3D thật.
+- HDVQ Solid Quantity 0.7.2: đã có source và hai thư mục DLL/2024/2025; có thay đổi chẩn đoán WebView2 COM. CadHost bản này dùng WinForms modeless, chưa thể coi đã đạt PaletteSet dockable tiêu chuẩn mới. Tên lệnh source là `HDVQ`, không tự đồng nhất với QSL phiên bản sau.
+- HDV C3D BuildKit 1.0: có compiler portable và Autodesk ref 2024/2025; bản thân nó chưa phải môi trường Civil 3D chạy thật, thiếu tham chiếu AecPropDataMgd 2024, chưa support 2026.
+- ATGT v1.1 và Cutter v1 là tài liệu đặc tả, không tự coi là DLL build.
+- ZIP QSL 0.8.2 / SolidCutter v2.3 / SolidInfo v4.4 / SolidLayer v1.1 chưa đọc được binary tại lần tổng hợp này, phải kiểm tra khi dùng làm baseline triển khai tiếp.
+
+## 14. Mẫu yêu cầu dùng lại ở mọi hội thoại
+
+&gt; Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại `ALGORITHM_INVENTORY.md` từ `.cs` để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy `--check` trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và metadata tool khi cần; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.
+</article></main><footer>HDV · Quy trình tạo và nghiệm thu DLL Civil 3D</footer></body></html>
