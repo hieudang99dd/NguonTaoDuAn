@@ -27,4 +27,4 @@ Tên tool: __________  Version: __________  Command: __________  Chủ sở hữ
 
 **Ký hiệu:** `PASS`, `FAIL`, `NOT_RUN`, `BLOCKED`, `N/A`. Ghi hostname build, host patch, framework, test DWG, số lượng đối tượng, log/ảnh trước khi đổi `NOT_RUN` thành `PASS`.
 
-**Quy tắc bàn giao:** `BUILD_PASS` không tương đương `NETLOAD_PASS`; `NETLOAD_PASS` không tương đương `CAD_PASS`. Không kiểm tra installer/Ribbon.
+**Quy tắc bàn giao:** `BUILD_PASS` không tương đương `NETLOAD_PASS`; `NETLOAD_PASS` không tương đương `CAD_PASS`.
