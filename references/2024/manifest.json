@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "host": "Autodesk Civil 3D",
+  "year": 2024,
+  "referenceDirectory": "references/2024",
+  "policy": "project-declared-dependencies",
+  "copyLocal": false,
+  "storeAutodeskBinariesInGit": false,
+  "requiredAssemblies": "declared by each consuming tool",
+  "validationStages": [
+    "declared-assembly",
+    "file-presence",
+    "PE-container",
+    "sha256",
+    "build",
+    "NETLOAD-host-test"
+  ]
+}
