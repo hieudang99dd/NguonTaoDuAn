@@ -30,6 +30,24 @@ class ReferenceManagerTests(unittest.TestCase):
             self.assertEqual(manager.check(root, 2025, ["Missing.dll"]), 2)
             self.assertTrue((root / "references/2025/.reference-index.json").is_file())
 
+    def test_2025_profiles_are_isolated(self):
+        with tempfile.TemporaryDirectory() as t:
+            root = Path(t)
+            src8 = root / "Example.dll"
+            mock_pe_dll(src8)
+            manager.add_reference(root, 2025, src8, runtime="net8")
+            self.assertEqual(manager.check(root, 2025, ["Example.dll"], "net8"), 0)
+            self.assertEqual(manager.check(root, 2025, ["Example.dll"], "net10"), 2)
+            src10 = root / "Example.dll"
+            src10.write_bytes(src10.read_bytes() + b"v10")
+            manager.add_reference(root, 2025, src10, runtime="net10")
+            self.assertEqual(manager.check(root, 2025, ["Example.dll"], "net10"), 0)
+            self.assertNotEqual(
+                manager.sha256(root / "references/2025/net8/Example.dll"),
+                manager.sha256(root / "references/2025/net10/Example.dll"))
+            with self.assertRaises(ValueError):
+                manager.folder_for(root, 2024, "net10")
+
     def test_reject_invalid(self):
         with tempfile.TemporaryDirectory() as t:
             dll = Path(t) / "Fake.dll"
