@@ -194,8 +194,8 @@ Công cụ được phát kèm tại `scripts/update_algorithm_inventory.py`, t�
 | Civil 3D | Target mặc định | Điều kiện |
 |---|---|---|
 | 2024 | `net48` | Autodesk references 2024 (AutoCAD 24.3), plugin x64 |
-| 2025 | `net8.0-windows` | Autodesk references 2025 (25.0); kiểm tra bản Update/.NET transition thực tế |
-| 2026 | profile riêng theo bản update | Kiểm tra .NET 8 hoặc .NET 10 và Autodesk references 2026; BuildKit v1 chưa hỗ trợ 2026 |
+| 2025 | `net8.0-windows` (trước Update 1.4) hoặc `net10.0-windows` (Update 1.4+) | Chọn theo bản cập nhật AutoCAD/Civil 3D trên máy, dùng đồng bộ Autodesk API references đúng framework; BuildKit v1 chỉ hỗ trợ net8 |
+| 2026 | `net8.0-windows` trước Update 1.2; `net10.0-windows` từ Update 1.2 | Cần BuildKit / Autodesk references theo host cập nhật; BuildKit v1 chưa hỗ trợ 2026 |
 
 **BuildKit ưu tiên:** giải nén `HDV_C3D_BuildKit_1_0_OFFLINE.zip`; xem `START_HERE.md`, `BUILD_GUIDE.md`, `PAYLOAD_SHA256.json`. Chạy theo thứ tự:
 
@@ -295,3 +295,5 @@ Repository chỉ quy định quy trình, cấu trúc, công cụ kiểm tra chun
 6. Thực hiện build, NETLOAD và kiểm thử DWG trên Civil 3D thật; ghi bằng chứng theo trạng thái độc lập `REFERENCE_CHECK_PASS`, `BUILD_PASS`, `NETLOAD_PASS`, `CAD_PASS`.
 
 **Cần phân biệt:** preflight hiện xác minh file PE, sự tồn tại, checksum và dependency đã kê khai; chưa xác thực chữ ký Autodesk hoặc suy ra chính xác toàn bộ dependencies từ source. Xem chi tiết `references/README.md`.
+
+**Đính chính về năm host:** từ 2026, tên sản phẩm `2025` không đồng nhất với .NET8; phải thu thập AutoCAD product update (ví dụ 2025.1.4), Civil 3D update và TFM của các managed DLL trước khi chốt profile. Không loại DLL `.NET10` chỉ vì có `AssemblyVersion=25.0.0.0`; kết luận phù hợp phải dựa đúng bản patch, tập hợp thư viện và thử nghiệm thực tế.
