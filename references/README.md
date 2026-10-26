@@ -53,3 +53,7 @@ Với assembly `MyAssembly.dll` của năm host mục tiêu:
 ## Kiểm thử / giới hạn
 
 `REFERENCE_CHECK_PASS` chỉ xác nhận file **đã kê khai** có mặt và có header PE hợp lệ, hash không thay đổi so với index cục bộ. Đây **không** phải `BUILD_PASS`, `NETLOAD_PASS`, hay `CAD_PASS`. Để nghiệm thu phải biên dịch với bộ reference đúng năm và kiểm thử trong Civil 3D thực tế.
+
+## Hai môi trường 2025
+
+AutoCAD 2025 trước Update 1.4: .NET8. AutoCAD 2025 Update 1.4 trở lên: .NET10 (kèm cập nhật Civil 3D phù hợp, ví dụ Civil 3D 2025.2.7). **Không trộn Autodesk refs .NET8 với .NET10 trong cùng một cấu hình build**. Phân loại kho 2025 theo profile patch/framework trên máy build; manifest năm không tự quyết định TFM. `buildkit_bridge.py inspect --host-runtime net10` đọc metadata, nhưng BuildKit 1.0 cần nâng cấp trước khi biên dịch net10.
