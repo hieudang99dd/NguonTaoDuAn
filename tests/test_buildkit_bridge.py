@@ -23,10 +23,18 @@ class BridgeTests(unittest.TestCase):
         with patch.object(bridge, "run_kit", return_value=self.fake_inspect(".NETCoreApp,Version=v8.0")):
             self.assertEqual(len(bridge.inspect_assembly(Path("."), [Path("Example.dll")], 2025)), 1)
 
-    def test_rejects_2025_net10_even_if_assembly_version_25(self):
+    def test_2025_net10_is_valid_for_host_updated_to_2025_1_4(self):
         with patch.object(bridge, "run_kit", return_value=self.fake_inspect(".NETCoreApp,Version=v10.0")):
-            with self.assertRaisesRegex(ValueError, "not for the 2025 .NET 8 host"):
-                bridge.inspect_assembly(Path("."), [Path("Example.dll")], 2025)
+            self.assertEqual(len(bridge.inspect_assembly(Path("."), [Path("Example.dll")], 2025, "net10")), 1)
+
+    def test_rejects_2025_net10_when_runtime_is_net8(self):
+        with patch.object(bridge, "run_kit", return_value=self.fake_inspect(".NETCoreApp,Version=v10.0")):
+            with self.assertRaisesRegex(ValueError, "selected 2025 runtime net8"):
+                bridge.inspect_assembly(Path("."), [Path("Example.dll")], 2025, "net8")
+
+    def test_v1_kit_lacks_net10_build_profile(self):
+        with self.assertRaisesRegex(ValueError, "BuildKit v1 only compiles net8"):
+            bridge.preflight(Path("."), Path("."), 2025, None, False, "net10")
 
     def test_rejects_2024_net8(self):
         with patch.object(bridge, "run_kit", return_value=self.fake_inspect(".NETCoreApp,Version=v8.0")):
