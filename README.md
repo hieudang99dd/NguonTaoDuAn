@@ -80,4 +80,4 @@ Xem [BUILD_ENVIRONMENT.md](BUILD_ENVIRONMENT.md) để biết kết quả kiểm
 
 **Không nhầm trạng thái:** GitHub đang lưu script kết nối với BuildKit, nhưng **không chứa compiler/runtime/Autodesk API DLL của BuildKit**. Để biên dịch thực sự, hệ thực thi cần được cung cấp bộ `HDV_C3D_BuildKit_1_0_OFFLINE.zip` đầy đủ (hoặc một môi trường build đã thiết lập tương đương).
 
-**Chặn DLL không tương thích:** thư viện `acdbmgdbrep.dll` được gửi riêng mang `AssemblyVersion=25.0.0.0` nhưng `TargetFramework=.NETCoreApp,Version=v10.0`. Vì BuildKit 2025 dùng .NET 8, công cụ bridge từ chối ghép thư viện này vào references/2025. Cần DLL đúng phiên bản framework, không đổi tên hoặc bỏ kiểm tra để ép build.
+**Phân biệt 2025 theo cập nhật:** AutoCAD 2025 trước Update 1.4 dùng .NET 8; AutoCAD 2025.1.4+ dùng .NET 10. DLL `acdbmgdbrep.dll` anh cung cấp là `25.0.0.0` và nhắm .NET10; **không thể kết luận sai AutoCAD 2025**. Bộ BuildKit 1.0 đang có chỉ hỗ trợ 2025/net8 và cần nâng cấp profile/framework/references tương ứng để build plugin cho 2025/net10. Xem `BUILD_ENVIRONMENT.md`.
