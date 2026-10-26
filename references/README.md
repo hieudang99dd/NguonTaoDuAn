@@ -27,10 +27,10 @@ Cả hai cách giữ file trên **máy build**, không commit binary vào GitHub
 ## Kiểm tra thư viện trước khi build
 
 ```powershell
-python scripts/reference_manager.py check --year 2025 --require AcMgd.dll --require AcDbMgd.dll
+python scripts/reference_manager.py check --year 2025 --runtime net8 --require AcMgd.dll --require AcDbMgd.dll
 python scripts/reference_manager.py check --year 2025 --project "C:\Source\CadHost.csproj"
 python scripts/reference_manager.py check --year 2025 --requirements-json "C:\Source\references.required.json"
-python scripts/reference_manager.py list --year 2025
+python scripts/reference_manager.py list --year 2025 --runtime net8
 ```
 
 `references.required.json` do **từng tool** cung cấp, ví dụ `{"requiredAssemblies":["AcMgd.dll","AcDbMgd.dll"]}`. Bộ chuẩn không lưu requirements cho bất kỳ tool cụ thể nào.
@@ -57,3 +57,6 @@ Với assembly `MyAssembly.dll` của năm host mục tiêu:
 ## Hai môi trường 2025
 
 AutoCAD 2025 trước Update 1.4: .NET8. AutoCAD 2025 Update 1.4 trở lên: .NET10 (kèm cập nhật Civil 3D phù hợp, ví dụ Civil 3D 2025.2.7). **Không trộn Autodesk refs .NET8 với .NET10 trong cùng một cấu hình build**. Phân loại kho 2025 theo profile patch/framework trên máy build; manifest năm không tự quyết định TFM. `buildkit_bridge.py inspect --host-runtime net10` đọc metadata, nhưng BuildKit 1.0 cần nâng cấp trước khi biên dịch net10.
+
+
+**Áp dụng mới cho 2025:** sử dụng `--runtime net8` hoặc `--runtime net10` khi import/check/list. Không chỉ dùng `--year 2025` cho dự án dual runtime vì đường dẫn cũ `references/2025` không phân biệt 2 profile. Xem `C3D2025_DUAL_RUNTIME.md` ở thư mục gốc.
