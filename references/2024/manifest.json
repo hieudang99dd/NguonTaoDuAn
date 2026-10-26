@@ -1,18 +1,24 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "host": "Autodesk Civil 3D",
   "year": 2024,
   "referenceDirectory": "references/2024",
   "policy": "project-declared-dependencies",
   "copyLocal": false,
   "storeAutodeskBinariesInGit": false,
-  "requiredAssemblies": "declared by each consuming tool",
-  "validationStages": [
-    "declared-assembly",
-    "file-presence",
+  "requiredAssemblies": "specified per consuming project; none forced by shared standard",
+  "automatedChecks": [
+    "declared-file-presence",
     "PE-container",
-    "sha256",
-    "build",
-    "NETLOAD-host-test"
+    "SHA256-vs-local-index-when-present"
+  ],
+  "manualGates": [
+    "Autodesk usage rights",
+    "assembly publisher and product version",
+    "correct Civil 3D year and updates",
+    "target framework and architecture",
+    "compile",
+    "NETLOAD in real Civil 3D",
+    "DWG functionality"
   ]
 }
