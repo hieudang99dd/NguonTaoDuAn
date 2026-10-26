@@ -1,0 +1,26 @@
+name: Validate generic reference tools
+on:
+  push:
+    paths:
+      - 'scripts/reference_manager.py'
+      - 'tests/test_reference_manager.py'
+      - 'references/**'
+      - '.github/workflows/test-reference-manager.yml'
+  pull_request:
+    paths:
+      - 'scripts/reference_manager.py'
+      - 'tests/test_reference_manager.py'
+      - 'references/**'
+      - '.github/workflows/test-reference-manager.yml'
+jobs:
+  generic-reference-manager:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit-test local reference import and preflight
+        run: python -m unittest discover -s tests -p test_reference_manager.py -v
+      - name: Check script syntax
+        run: python -m py_compile scripts/reference_manager.py
