@@ -1,0 +1,36 @@
+# PROJECT STATUS
+
+Tool: ___ | Version: ___ | Last update: ___
+
+## Source baseline
+- ZIP: ___
+- SHA256: ___
+- CAD Command: ___
+- Host targets: ___
+
+## Branding / Logo HDV
+- Logo nguồn: `assets/HDV_LOGO_ORIGINAL_2048.png`
+- SHA256 file nguồn: ___
+- Full English tool name in UI: ___
+- Palette logo + name: NOT_RUN
+- Ribbon real icon: NOT_RUN
+- Installer real icon: NOT_RUN
+
+## Changes
+| ID | Requirement | Source files | State | Evidence |
+|---|---|---|---|---|
+| | | | TODO | |
+
+## Verification
+| Test | State | Evidence |
+|---|---|---|
+| STATIC | NOT_RUN | |
+| BUILD_2024 | NOT_RUN | |
+| BUILD_2025 | NOT_RUN | |
+| NETLOAD_2024 | NOT_RUN | |
+| NETLOAD_2025 | NOT_RUN | |
+| CAD_DWG | NOT_RUN | |
+| EXE_RIBBON_WINDOWS | NOT_RUN | |
+
+## Known limitations / next actions
+- ___

@@ -1,0 +1,28 @@
+{
+  "schema": "HDV-Branding-Guidance-v1",
+  "note": "Sample guidance only. Existing HVDTools updater/tool.json parser may ignore branding.json. Do not claim runtime integration without code changes and Windows tests.",
+  "brand": "HDV",
+  "logoOriginal": "assets/HDV_LOGO_ORIGINAL_2048.png",
+  "logoPalette": "assets/HDV_LOGO_64.png",
+  "logoRibbon": "assets/HDV_LOGO_32.png",
+  "logoInstaller": "assets/HDV_TOOLS.ico",
+  "paletteFullEnglishName": "<Tool Full English Name>",
+  "paletteShortCommand": "<Unique Command>",
+  "colors": {
+    "background": "#15191e",
+    "accent": "#f08b36"
+  },
+  "preserveOriginal": true,
+  "placements": [
+    "documentation",
+    "palette",
+    "ribbon-if-supported",
+    "installer-if-built"
+  ],
+  "testStates": {
+    "documentation": "ASSET_READY",
+    "palette": "NOT_INTEGRATED",
+    "ribbon": "NOT_INTEGRATED",
+    "installer": "NOT_INTEGRATED"
+  }
+}

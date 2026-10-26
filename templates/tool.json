@@ -1,0 +1,15 @@
+{
+  "id": "ToolUniqueId",
+  "name": "Tool Full English Name",
+  "version": "1.0.0",
+  "category": "SOLID",
+  "ribbonCategory": "BIM TUYẾN",
+  "ribbonGroup": "Solid",
+  "ribbonLabel": "Tên tác vụ tiếng Việt",
+  "ribbonOrder": 10,
+  "ribbonIcon": "box",
+  "command": "LENH_THAT",
+  "entryAssembly": "bin/2025/Tool.CadHost.dll",
+  "supportedYears": [2025],
+  "description": "Mô tả chính xác chức năng"
+}
