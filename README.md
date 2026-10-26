@@ -73,3 +73,11 @@ python scripts/reference_manager.py check --year 2025 --project "C:\\Source\\Cad
 Các DLL Autodesk là tài nguyên build **cục bộ**, không được tự ý commit lên kho GitHub công khai. File DLL được người dùng cung cấp trong một hội thoại có thể được đưa vào **gói tham chiếu riêng để dùng cục bộ**, không ràng buộc bộ quy chuẩn vào một công cụ cụ thể.
 
 **Giới hạn nghiệm thu:** file có mặt/hash/PE hợp lệ không đồng nghĩa đúng năm Autodesk, biên dịch thành công hay NETLOAD thành công; phải kiểm chứng các gate riêng.
+
+## Đã kiểm toán BuildKit 1.0 và tích hợp quy trình kiểm tra trước build
+
+Xem [BUILD_ENVIRONMENT.md](BUILD_ENVIRONMENT.md) để biết kết quả kiểm toán bộ BuildKit offline thực tế và cách dùng `scripts/buildkit_bridge.py`. Kiểm toán ngày 27/10/2026 xác nhận `verify` PASS, 8/8 unit tests PASS, 2 lần build lại recipe mẫu 2024/2025 PASS; **chưa thử NETLOAD trên Civil 3D**.
+
+**Không nhầm trạng thái:** GitHub đang lưu script kết nối với BuildKit, nhưng **không chứa compiler/runtime/Autodesk API DLL của BuildKit**. Để biên dịch thực sự, hệ thực thi cần được cung cấp bộ `HDV_C3D_BuildKit_1_0_OFFLINE.zip` đầy đủ (hoặc một môi trường build đã thiết lập tương đương).
+
+**Chặn DLL không tương thích:** thư viện `acdbmgdbrep.dll` được gửi riêng mang `AssemblyVersion=25.0.0.0` nhưng `TargetFramework=.NETCoreApp,Version=v10.0`. Vì BuildKit 2025 dùng .NET 8, công cụ bridge từ chối ghép thư viện này vào references/2025. Cần DLL đúng phiên bản framework, không đổi tên hoặc bỏ kiểm tra để ép build.
