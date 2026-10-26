@@ -6,7 +6,7 @@
 **Quy chuẩn nhận diện:** giữ logo HDV gốc, bố trí logo đi cùng **tên tiếng Anh đầy đủ** của từng tool.
 
 **Mã:** C3D-SOP-001  
-**Phiên bản:** 1.1.0 — bổ sung nhận diện logo HDV  
+**Phiên bản:** 1.2.0 — bổ sung quản lý danh mục thuật toán hiện hành tự làm mới  
 **Ngày:** 26/10/2026  
 **Phạm vi:** các công cụ C#/.NET hoạt động trong Autodesk AutoCAD/Civil 3D, ưu tiên 2024/2025, chuẩn bị mở rộng 2026.  
 **Nhãn trạng thái:** TÀI LIỆU QUY TRÌNH / chưa phải DLL mới, chưa thay đổi mã nguồn tool cũ.
@@ -28,7 +28,8 @@
 7. **Không báo thành công giả:** không coi không ném exception là thành công; phải xác minh output (ObjectId, loại, số lượng, thể tích, topology hoặc thuộc tính theo đặc thù).
 8. **Không viện cớ thiếu Visual Studio:** kiểm tra HDV C3D BuildKit, chạy `verify`, `doctor` rồi build; thiếu tài nguyên phải chỉ rõ file/phiên bản.
 9. **Mã nguồn hoàn chỉnh và artifact build thật:** không đưa file nguồn rời rạc, DLL giả, path ZIP chưa tồn tại hoặc source-only dưới tên built DLL.
-10. **Không phân phối Autodesk API DLL trong plugin end-user:** Autodesk references để build nội bộ. Giữ giấy phép, hash, danh sách dependency, không đưa private key/chứng chỉ vào ZIP.
+10. **Bắt buộc bảng thuật toán hiện hành:** mỗi tool phải có `ALGORITHM_INVENTORY.md`, chỉ liệt kê tên và chức năng của thuật toán đang có trong mã nguồn active; sinh lại sau mọi chỉnh sửa, không đưa thuật toán cũ/đã loại bỏ vào tài liệu phát hành.
+11. **Không phân phối Autodesk API DLL trong plugin end-user:** Autodesk references để build nội bộ. Giữ giấy phép, hash, danh sách dependency, không đưa private key/chứng chỉ vào ZIP.
 
 ## 2. Bước 00 — Tiếp nhận, khóa bản gốc
 
@@ -36,7 +37,7 @@
 
 - Liệt kê file, version assembly, `CommandMethod`, UI, tài nguyên, tài liệu, kết quả build, hash SHA256.
 - Xác định đúng ZIP baseline (không mặc định file tên mới nhất là bản chạy tốt nhất); tạo `SOURCE_AUDIT.md`, so sánh với yêu cầu mới nhất.
-- Đọc `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, các file `.csproj`, `buildkit.project.json`, `tool.json`.
+- Đọc `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `ALGORITHM_INVENTORY.md` (nếu có), các file `.csproj`, `buildkit.project.json`, `tool.json`.
 - Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh đang cài trong HVDTools/Ribbon. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.
 - Đối chiếu thực tế source và changelog (bản HDVQ 0.7.2 vẫn có README nói “source candidate” dù ZIP đã có DLL: phải cập nhật tài liệu cho đúng artifact thực tế).
 
@@ -113,6 +114,8 @@ Ràng buộc phải nêu rõ:
 ├── buildkit.project.json            # recipe portable năm host
 ├── tool.json                        # metadata cho Ribbon/installer (schema hiện hành)
 ├── branding.json                    # hướng dẫn nhận diện, chưa có runtime binding
+├── ALGORITHM_INVENTORY.md           # file sinh tự động: tên + chức năng thuật toán còn hiệu lực
+├── scripts/update_algorithm_inventory.py
 ├── PROJECT_STATUS.md
 └── README.md
 ```
@@ -140,6 +143,48 @@ Ràng buộc phải nêu rõ:
 - **ATGT:** tách nhận dạng block/layer, đối chiếu CAD gốc/sửa, thay đổi hình học, quản lý revision, thống kê và ánh xạ tới Alignment/station/offset. `StationLocationResolver.cs` là phần tử thứ 31 đã chốt trong đặc tả, nhưng đặc tả không phải minh chứng build.
 
 **Gate G4:** unit tests engine + sai số/điều kiện biên; tính đúng đắn theo nghiệp vụ không phụ thuộc UI.
+
+### 6.1. Danh mục thuật toán hiện hành — bắt buộc từ v1.2
+
+**Mỗi tool phải có đúng một file `ALGORITHM_INVENTORY.md` tại thư mục gốc.** File chỉ ghi **tên thuật toán** và **chức năng** hiện đang có trong mã nguồn được đóng gói, không phải bảng lịch sử hoặc danh sách thuật toán dự kiến. Ví dụ định dạng:
+
+| Tên thuật toán | Chức năng |
+|---|---|
+| `SurfaceSolidCreator` | Tạo khối Solid bằng API Civil 3D từ bề mặt đã chọn. |
+
+*Hàng ví dụ ở trên chỉ để minh họa cấu trúc; không phải xác nhận một thuật toán đang tồn tại trong tool cụ thể.*
+
+**Vòng đời cập nhật tuyệt đối:**
+
+1. Thêm thuật toán mới → gắn metadata nguồn `// HDV-ALGO-NAME:` và `// HDV-ALGO-FUNCTION:` ngay trong `.cs`, sau đó **sinh lại file**.
+2. Sửa tên, thay đổi logic hoặc chức năng → cập nhật phần mô tả metadata phù hợp với triển khai, **sinh lại toàn bộ file**, không nối thêm các mục cũ.
+3. Xóa/thay thế/gộp thuật toán → xóa mã nguồn cũ khỏi bản nguồn hiện hành, sinh lại danh mục; các mục đã xóa **tự biến mất**, không hiển thị `Deprecated`, `Legacy`, `Old` trong danh mục hiện hành.
+4. Khi chưa xác thực mã nguồn, ghi rõ danh mục chưa được kiểm kê; **không tự dựng danh sách theo tên ZIP/đặc tả**.
+5. Sau mỗi lần sửa, trước mỗi build, trước commit và trước đóng ZIP, bắt buộc chạy công cụ cập nhật/kiểm tra. `--check` phải trả về mã 0; nếu sai phải chặn release.
+
+**Quy ước tối thiểu trong file `.cs` thực thi thuật toán:**
+
+```csharp
+// HDV-ALGO-NAME: SurfaceSolidCreator
+// HDV-ALGO-FUNCTION: Tạo Solid từ bề mặt đang chọn bằng API Civil 3D.
+public sealed class SurfaceSolidCreator
+{
+    // Thuật toán thực tế nằm trong project.
+}
+```
+
+**Lệnh chuẩn tại thư mục gốc của từng tool:**
+
+```bash
+python scripts/update_algorithm_inventory.py --source-root src
+python scripts/update_algorithm_inventory.py --source-root src --check
+```
+
+Công cụ được phát kèm tại `scripts/update_algorithm_inventory.py`, tạo lại file theo metadata trong mã `.cs`, đối chiếu SHA256 từng nguồn để phát hiện mọi thay đổi, sắp xếp tên nhất quán và chặn tên trùng. File nguồn trong thư mục `Algorithms/` mà thiếu metadata sẽ bị báo lỗi, không bị bỏ qua âm thầm. Nếu project dùng quy tắc `Compile Include/Remove` phức tạp, cần cung cấp danh sách file thực sự biên dịch với `--compiled-files`; Python scan không thay thế việc MSBuild đánh giá đầy đủ project. Mỗi `.cs` có thể chứa nhiều cặp metadata tương ứng nhiều thuật toán.
+
+**Giới hạn xác minh:** công cụ phát hiện thay đổi mã và đồng bộ danh sách, nhưng không tự suy luận được ý nghĩa thuật toán C#. Người sửa mã phải kiểm tra lại câu mô tả chức năng; QA có nhiệm vụ đối chiếu tên, chức năng với triển khai. Lịch sử phiên bản được quản lý bằng Git, không sao chép thuật toán cũ vào file hiện hành. Không bắt buộc xóa lịch sử commit.
+
+**Gate G4-ALGO:** danh mục tạo từ nguồn đúng phiên bản, không trùng tên, không có mục đã bị loại, `--check` PASS, mô tả chức năng được duyệt. Nếu không đủ bằng chứng, không đóng dấu ALGORITHM_INVENTORY_PASS.
 
 ## 7. Bước 05 — CadHost, tương tác CAD và IPC
 
@@ -174,11 +219,13 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 **Quy tắc phụ thuộc:** `AcMgd`, `AcDbMgd`, `AcCoreMgd`, `AecBaseMgd`, `AeccDbMgd` theo đúng năm; `AecPropDataMgd` chỉ khi cần và đúng năm (bộ kit v1 thiếu `AecPropDataMgd` 2024). Autodesk references có `Private=false`/CopyLocal=false. Đóng gói đúng WebView2 Core/Wpf hoặc WinForms tùy host, loader x64, HTML/CSS/JS, Newtonsoft.Json/ClosedXML nếu sử dụng. WebView2 **SDK DLL không thay thế Edge WebView2 Runtime** của Windows.
 
+**Trước mỗi build:** `python scripts/update_algorithm_inventory.py --source-root src --check`; nếu FAIL thì dừng build đến khi tái tạo và kiểm tra danh mục.
+
 **Gate G6:** 0 compile error, danh sách warning công khai, result.json, compiler log, metadata DLL/TFM, dll/dependencies/UI đầy đủ; không chép API Autodesk DLL làm thư viện chạy end-user.
 
 ## 9. Bước 07 — Kiểm thử 5 lớp và nghiệm thu
 
-**A. Static/Unit:** compile, phân tích API, unit engine; sai lệch số học, dữ liệu trống, unicode, filename, layer, mã nguồn đầy đủ.
+**A. Static/Unit:** compile, phân tích API, unit engine; sai lệch số học, dữ liệu trống, unicode, filename, layer, mã nguồn đầy đủ. Kiểm tra `ALGORITHM_INVENTORY.md` trùng khớp metadata mã nguồn, không có thuật toán bị thay thế.
 
 **B. IPC/UI:** mọi action, click/refresh/cancel, hàng đợi, dock/narrow, scrolling, overlay, preview vs CAD, lỗi `crypto.randomUUID`.
 
@@ -192,7 +239,7 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 ## 10. Bước 08 — Đóng gói 3 tầng
 
-**Tầng 1 — Source package:** solution, toàn bộ `.cs`/UI/assets (bao gồm logo HDV gốc và biến thể nhỏ), recipe, tests, docs, license, hash, đầy đủ file bổ trợ; không kèm private key.
+**Tầng 1 — Source package:** `ALGORITHM_INVENTORY.md` đã cập nhật, `scripts/update_algorithm_inventory.py`, solution, toàn bộ `.cs`/UI/assets (bao gồm logo HDV gốc và biến thể nhỏ), recipe, tests, docs, license, hash, đầy đủ file bổ trợ; không kèm private key.
 
 **Tầng 2 — NETLOAD package (mỗi năm):** thư mục có `*.CadHost.dll`, `Domain/Application/Infrastructure`, WebView2 assemblies/loader và UI/assets bao gồm logo HDV nếu không embedded, config, hướng dẫn NETLOAD, báo cáo phiên bản; không trộn 2024 với 2025.
 
@@ -210,7 +257,7 @@ Bàn giao tối thiểu:
 2. `Tool_NETLOAD_C3D2024_<version>.zip` và `Tool_NETLOAD_C3D2025_<version>.zip` (chỉ khi đã build).
 3. `Tool_Setup_<version>.exe` hoặc `.bundle` (chỉ khi đã tạo); mọi file cần cài có trong payload.
 4. `QA_REPORT.md` có ma trận 6 trạng thái; không đánh tráo MOCK thành CAD test.
-5. `CHANGELOG.md`, `PROJECT_STATUS.md`, `README_NETLOAD.md`, `SHA256SUMS.txt`.
+5. `CHANGELOG.md`, `PROJECT_STATUS.md`, `ALGORITHM_INVENTORY.md` (tên + chức năng **hiện hành**), script tự làm mới, `README_NETLOAD.md`, `SHA256SUMS.txt`.
 6. `CommandMethod` chính + tên đầy đủ tiếng Anh + **logo HDV theo asset chuẩn** + menu Ribbon chuẩn (nếu tích hợp thật).
 7. Phương án nâng cấp/thêm tool: `Incoming/<tool>.zip` với `tool.json`, đóng CAD, updater, khởi động lại, verify command.
 
@@ -242,4 +289,4 @@ Quy ước version: `MAJOR.MINOR.PATCH`, một baseline tag cố định. Chỉ 
 
 ## 14. Mẫu yêu cầu dùng lại ở mọi hội thoại
 
-> Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và gói updater `tool.json` nếu yêu cầu; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.
+> Đọc `PROJECT_MASTER_SOURCE.md` và `QUY_TRINH_CHUAN_TOOL_CIVIL3D.md`. Đọc ZIP/code gốc mới nhất hiện có, không suy nguồn khác. Xác định source audit, yêu cầu đã chốt, luồng UI dark/orange dockable, logo HDV gốc cạnh tên tiếng Anh đầy đủ (theo tài liệu `HUONG_DAN_SU_DUNG_LOGO_HDV.md`), lệnh duy nhất và 4 lớp Domain/Application/Infrastructure/CadHost. Chỉ dùng Autodesk DLL đúng năm và thực hiện BuildKit verify→doctor→build; test IPC/UI và kiểm tra đầu ra thực; chỉ công bố NETLOAD/CAD_PASS khi chạy trên Civil 3D thật. Sau mỗi lần sửa mã phải tạo lại `ALGORITHM_INVENTORY.md` từ `.cs` để chỉ có tên + chức năng thuật toán đang sử dụng, không giữ thuật toán cũ; chạy `--check` trước build và bàn giao. Khi hoàn tất, xuất full source, 2024/2025 CadHost DLL nếu build thành công, dependencies, test report, changelog, hướng dẫn NETLOAD và gói updater `tool.json` nếu yêu cầu; không tạo lệnh/đường dẫn/tuyên bố nghiệm thu giả.

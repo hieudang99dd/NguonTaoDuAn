@@ -1,0 +1,14 @@
+name: Check Current Algorithms
+on:
+  push:
+  pull_request:
+jobs:
+  validate-algorithm-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check algorithm inventory is current
+        run: python scripts/update_algorithm_inventory.py --source-root src --check

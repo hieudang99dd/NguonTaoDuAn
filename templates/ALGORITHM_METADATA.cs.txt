@@ -1,0 +1,4 @@
+// Đặt chú thích sát lớp/phương thức thực thi mỗi thuật toán trong source đang build.
+// HDV-ALGO-NAME: SurfaceSolidCreator
+// HDV-ALGO-FUNCTION: Tạo Solid từ bề mặt được chọn bằng API Civil 3D.
+// Đây chỉ là metadata ví dụ; KHÔNG phải thuật toán đã xây dựng.

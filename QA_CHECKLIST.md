@@ -11,6 +11,9 @@ Tên tool: __________  Version: __________  Command: __________  Chủ sở hữ
 | G2-L2 | Logo + tên tiếng Anh đầy đủ trên Palette, dock 350–430 px, DPI 100–200% | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G3 | UI ↔ IPC action mapping + mock | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G4 | Unit engine, geometry, units, batch, error/cancel | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G4-ALGO-1 | `ALGORITHM_INVENTORY.md` tồn tại, chỉ 2 cột tên + chức năng thuật toán hiện hành | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G4-ALGO-2 | Chạy script cập nhật + `--check` thành công sau mỗi lần sửa, trước build | NOT_RUN | NOT_RUN | NOT_RUN | |
+| G4-ALGO-3 | Thử xóa/gộp/đổi thuật toán: danh mục tự xóa mục cũ, không trùng tên và chức năng đúng mã | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G5 | Document lock/command context/transaction/Undo/SaveAs | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G6a | BuildKit verify + doctor đúng references | NOT_RUN | NOT_RUN | NOT_RUN | |
 | G6b | Full build CadHost + dependencies + resources | NOT_RUN | NOT_RUN | NOT_RUN | |

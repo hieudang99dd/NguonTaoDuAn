@@ -11,6 +11,11 @@ FILES = {
         "bytes": 5433767,
         "sha256": "1aae883214da4a2d23e7178c7a7f43983d683e23bad68681389c8d759a67b77a",
     },
+    "release/C3D_TOOL_STANDARD_V1_2_HDV_ALGORITHM_INVENTORY.zip": {
+        "parts": 9,
+        "bytes": 6006135,
+        "sha256": "99fa1c1bc6a9936991c754ebc7de813d63669fe0c0df6bd8efe80fcb1dbf6429",
+    },
     "release/C3D_TOOL_STANDARD_V1_1_HDV_LOGO.zip": {
         "parts": 9,
         "bytes": 5996287,

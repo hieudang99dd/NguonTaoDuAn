@@ -16,6 +16,15 @@ Tool: ___ | Version: ___ | Last update: ___
 - Ribbon real icon: NOT_RUN
 - Installer real icon: NOT_RUN
 
+## Current Algorithm Inventory (required)
+- Inventory: `ALGORITHM_INVENTORY.md`
+- Generator: `scripts/update_algorithm_inventory.py`
+- Refreshed against current source: NOT_RUN
+- Algorithm count: ___
+- Last check: NOT_RUN
+- Function descriptions reviewed: NOT_RUN
+- No legacy/removed algorithms in release: NOT_RUN
+
 ## Changes
 | ID | Requirement | Source files | State | Evidence |
 |---|---|---|---|---|

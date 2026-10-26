@@ -1,4 +1,4 @@
-# C3D Tool Standard v1.1 — HDV
+# C3D Tool Standard v1.2 — HDV
 
 ![Logo HDV](assets/HDV_LOGO_256.png)
 
@@ -36,3 +36,13 @@ python scripts/restore_large_assets.py
 Lệnh khôi phục `assets/HDV_LOGO_ORIGINAL_2048.png` và `release/C3D_TOOL_STANDARD_V1_1_HDV_LOGO.zip`, xác thực SHA256 tự động. Xem [hướng dẫn file lớn](LARGE_FILES.md).
 
 **Phạm vi:** Đây là tài liệu và bộ nhận diện chuẩn v1.1, không phải source/binary của tất cả các tool SLB, QSL, Cutter, SolidInfo hay SolidLayer.
+
+## v1.2 — Danh mục thuật toán hiện hành
+
+- **`ALGORITHM_INVENTORY.md`**: danh mục hiện hành của repo tiêu chuẩn (repo này không có mã nguồn tool, nên 0 thuật toán xác minh; không phải danh sách SLB/QSL).
+- **`HUONG_DAN_DANH_MUC_THUAT_TOAN.md`**: quy định bắt buộc chỉ giữ tên/chức năng thuật toán trong phiên bản hiện tại.
+- **`scripts/update_algorithm_inventory.py`**: tạo mới toàn bộ bảng từ metadata trong C#, so SHA256, `--check` chặn build/release nếu bị cũ.
+- **`.github/workflows/check-algorithm-inventory.yml`**: kiểm tra đồng bộ trên mỗi push/PR.
+- **`templates/ALGORITHM_INVENTORY.md`** và **`templates/ALGORITHM_METADATA.cs.txt`**: mẫu cho tool C3D mới.
+
+**Tải ZIP chuẩn v1.2 trên GitHub:** gồm 9 phần dưới `release/`, dùng `python scripts/restore_large_assets.py` để ghép nguyên vẹn và kiểm tra hash. Bản v1.1 được giữ làm lịch sử tiêu chuẩn; danh mục thuật toán của từng tool **không giữ bản ghi thuật toán cũ**.
