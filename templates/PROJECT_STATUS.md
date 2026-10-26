@@ -13,8 +13,6 @@ Tool: ___ | Version: ___ | Last update: ___
 - SHA256 file nguồn: ___
 - Full English tool name in UI: ___
 - Palette logo + name: NOT_RUN
-- Ribbon real icon: NOT_RUN
-- Installer real icon: NOT_RUN
 
 ## Current Algorithm Inventory (required)
 - Inventory: `ALGORITHM_INVENTORY.md`
@@ -39,7 +37,6 @@ Tool: ___ | Version: ___ | Last update: ___
 | NETLOAD_2024 | NOT_RUN | |
 | NETLOAD_2025 | NOT_RUN | |
 | CAD_DWG | NOT_RUN | |
-| EXE_RIBBON_WINDOWS | NOT_RUN | |
 
 ## Known limitations / next actions
 - ___
