@@ -13,9 +13,9 @@
 
 ## 0. Nguồn đầu vào và cấp độ xác minh
 
-- **Đã đọc trực tiếp từ ZIP:** `SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip` (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), `HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip` (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), `HDV_C3D_BuildKit_1_0_OFFLINE.zip` (công cụ biên dịch và manifest), `HVDTools_RibbonPro_2025_FULL_SOURCE.zip` (mã nguồn installer/updater, tài liệu), `PROJECT_MASTER_SOURCE.md` và đặc tả `SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md`, `ATGT_Quantity_Revision_Manager_Spec_v1_1.md`.
+- **Đã đọc trực tiếp từ ZIP:** `SolidBuilder_SLB_v4_4_0_DOCKABLE_2024_2025_FULL_SOURCE_BUILT_DLL.zip` (mã nguồn, tài liệu, 2 bộ DLL, báo cáo build), `HDVQ_SolidQuantity_v0_7_2_2024_2025_FULL_FIX.zip` (mã nguồn, DLL, UI, hướng dẫn lỗi WebView2), `HDV_C3D_BuildKit_1_0_OFFLINE.zip` (công cụ biên dịch và manifest), `PROJECT_MASTER_SOURCE.md` và đặc tả `SOLID_CUTTER_PRO_TECHNICAL_SPEC_V1.md`, `ATGT_Quantity_Revision_Manager_Spec_v1_1.md`.
 - **Phát hiện nhưng chưa đọc trực tiếp byte ZIP tại lần tổng hợp:** QSL v0.8.2, SolidCutterPro v2.3, SolidInfo v4.4, SolidLayer v1.1. Các mục liên quan lấy từ lịch sử yêu cầu/tên phát hành, không suy thành chứng nhận code mới nhất.
-- **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS), kiểm chứng nạp lệnh và DLL bằng NETLOAD (NETLOAD_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
+- **Xác minh cần tách:** mã đã có (IMPLEMENTED), kiểm tra tĩnh (STATIC_PASS), biên dịch (BUILD_PASS), NETLOAD trên host thật (NETLOAD_PASS), chạy nghiệp vụ trên DWG (CAD_PASS). Không dùng chữ “hoàn thiện” thay các minh chứng riêng.
 
 ## 1. Nguyên tắc bất biến
 
@@ -38,7 +38,7 @@
 - Liệt kê file, version assembly, `CommandMethod`, UI, tài nguyên, tài liệu, kết quả build, hash SHA256.
 - Xác định đúng ZIP baseline (không mặc định file tên mới nhất là bản chạy tốt nhất); tạo `SOURCE_AUDIT.md`, so sánh với yêu cầu mới nhất.
 - Đọc `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md`, `ALGORITHM_INVENTORY.md` (nếu có), các file `.csproj`, `buildkit.project.json`, `tool.json`.
-- Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh đang cài trong HVDTools/Ribbon. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.
+- Chốt một mã lệnh CAD chính **duy nhất cho mỗi tool**, kiểm tra không trùng lệnh CAD giữa các tool. Ví dụ SLB; QSL cần xác định đúng nghiệp vụ sau khi đổi từ HDVQ; Solid Cutter phiên bản cũ dùng SLCUT.
 - Đối chiếu thực tế source và changelog (bản HDVQ 0.7.2 vẫn có README nói “source candidate” dù ZIP đã có DLL: phải cập nhật tài liệu cho đúng artifact thực tế).
 
 **Gate G0:** nguồn gốc, phạm vi, hệ phiên bản, lệnh CAD và tình trạng test rõ ràng.
@@ -88,9 +88,9 @@ Ràng buộc phải nêu rõ:
 
 **Quy tắc triển khai:** file gốc 2048×2048 phải giữ nguyên byte/hash; chỉ thu nhỏ tạo bản cho UI. Tránh kéo giãn, cắt chữ H/D, đổi màu hoặc gắn thêm chữ vào chính file logo. Trong thanh tiêu đề, tách riêng ảnh logo và text tên tool để nội dung chữ luôn sắc nét. Ảnh 16/32 px chỉ là fallback — kiểm tra độ nhận diện ở DPI thực; nếu thiếu rõ ràng, thiết kế icon đơn giản riêng trong một bước được phê duyệt (không tự sửa logo gốc).
 
-**Tích hợp kỹ thuật:** `templates/branding.json` là metadata hướng dẫn, **không phải schema đã được CadHost hay HVDTools updater hỗ trợ**. Khi triển khai, nhúng image resources ở CadHost/WebView2, hoặc copy theo cấu trúc bundle để UI tìm thấy. Không mặc định đổi trường `ribbonIcon: "box"` thành đường dẫn PNG: updater hiện tại cần được mở rộng và test Windows trước khi làm vậy. Các namespace lịch sử `HDVQ`, `HVDTools` giữ nguyên cho đến khi có migration riêng; việc dùng logo HDV không tự động đổi command hoặc tên assembly.
+**Tích hợp kỹ thuật:** Dùng `templates/branding.json` làm hướng dẫn nhận diện PaletteSet/WebView2. Nhúng logo hoặc chép asset vào thư mục DLL NETLOAD đúng đường dẫn tương đối; xác minh thực tế trên Civil 3D.
 
-**Điều kiện nghiệm thu nhận diện:** so ảnh gốc với file trong ZIP bằng SHA256; mở preview; thử panel hẹp/màn hình 100–200% DPI; kiểm tra `logo + full English name` trên Palette; kiểm tra icon thật trên Ribbon/EXE khi build/cài được; không đánh dấu PASS dựa trên ảnh minh họa.
+**Điều kiện nghiệm thu nhận diện:** kiểm tra SHA256 logo, dock hẹp, DPI 100–200%, logo cạnh tên đầy đủ trên PaletteSet thật; chưa chạy thực tế thì ghi NOT_RUN.
 
 ## 5. Bước 03 — Kiến trúc 4 lớp cố định
 
@@ -105,11 +105,11 @@ Ràng buộc phải nêu rõ:
 │       ├── Commands/                # hàng đợi, CommandMethod, transaction
 │       ├── Cad/                     # adapters và truy cập Document/Database
 │       └── UI/web/                  # HTML/CSS/JS và assets
-├── assets/                          # Logo HDV gốc + icon nhiều kích thước
+├── assets/                          # Logo HDV cho UI và tài liệu
 ├── tests/                           # unit, contract, UI mock, integration
 ├── docs/                            # SOP áp dụng, quyết định, QA, changelog
 ├── buildkit.project.json            # recipe portable năm host
-├── tool.json                        # metadata cho Ribbon/installer (schema hiện hành)
+├── tool.json                        # metadata lệnh và DLL NETLOAD
 ├── branding.json                    # hướng dẫn nhận diện, chưa có runtime binding
 ├── ALGORITHM_INVENTORY.md           # file sinh tự động: tên + chức năng thuật toán còn hiệu lực
 ├── scripts/update_algorithm_inventory.py
@@ -230,9 +230,9 @@ Trên Windows sử dụng `build.cmd`/`build.ps1` tương ứng theo tài liệu
 
 **D. CAD/DWG:** DWG chuẩn/lỗi/nặng, nhiều DWG, chuyển tài liệu, ctrl+Z/undo, save/open, Xref, block, layer trùng tên, INSUNITS=0, WCS/UCS, các hình học sát/không giao/biên, các solid lớn và solid trụ/cống, chạy batch có phần thất bại. So output với công cụ Civil 3D Native khi nghiệp vụ tương đương.
 
-**Gate G7:** chỉ xác nhận `NETLOAD_PASS` sau khi nạp DLL trong Civil 3D đúng phiên bản, gọi lệnh thực và mở UI; chỉ `CAD_PASS` khi kiểm thử kết quả trên DWG thật. Không yêu cầu Ribbon, EXE, CUIX, .bundle hoặc trình cài đặt.
+**Gate G7:** chỉ xác nhận `NETLOAD_PASS` sau khi nạp DLL trong Civil 3D đúng phiên bản, gọi lệnh thực và mở UI; chỉ `CAD_PASS` khi kiểm thử kết quả trên DWG thật. Chỉ kiểm tra DLL NETLOAD và kết quả nghiệp vụ.
 
-## 10. Bước 08 — Chuẩn bị DLL nạp NETLOAD (không đóng gói installer)
+## 10. Bước 08 — Chuẩn bị DLL nạp NETLOAD (theo host)
 
 **Đầu ra duy nhất phải chạy được:** `<Tool>.CadHost.dll` cho từng phiên bản Civil 3D được hỗ trợ. Các dependency riêng, UI WebView2, cấu hình, logo và resource cần thiết đặt cùng thư mục theo cấu trúc mà bộ nạp thực tế sử dụng. Không sao chép Autodesk API references từ môi trường build vào output end-user.
 
@@ -253,7 +253,6 @@ Deliverables/
 
 **Điều kiện đạt:** file DLL thực tồn tại, kiểm tra đúng runtime/bitness/API refs, tập hợp đủ dependency, ghi lệnh CAD và đường dẫn DLL, không có kết quả build giả. `BUILD_PASS` là có DLL hợp lệ; `NETLOAD_PASS` đòi hỏi kiểm tra trên Civil 3D thực tế.
 
-**Loại khỏi phạm vi dự án:** EXE, installer, CUIX, Ribbon, `.bundle`, updater, Windows shell integration, ký số bộ cài, phân phối/cài đặt plugin. Toàn bộ thuộc dự án riêng, không phải điều kiện nghiệm thu của quy trình này.
 
 ## 11. Bước 09 — Bàn giao và quản lý phiên bản
 
@@ -265,7 +264,7 @@ Bàn giao tối thiểu:
 4. `README_NETLOAD.md` hướng dẫn mở Civil 3D đúng phiên bản → nhập `NETLOAD` → chọn đúng `CadHost.dll` → nhập tên lệnh CAD → kiểm tra giao diện và chức năng.
 5. Báo cáo `BUILD_PASS`, `NETLOAD_PASS`, `CAD_PASS` riêng biệt, chỉ ghi PASS khi có bằng chứng. Không tuyên bố đã NETLOAD nếu chỉ compile offline.
 
-Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ hướng dẫn logo HDV + tên tiếng Anh đầy đủ trong Palette; không yêu cầu Ribbon hay trình cài.
+Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ hướng dẫn logo HDV + tên tiếng Anh đầy đủ trong Palette; chỉ yêu cầu DLL NETLOAD.
 
 ## 12. Các lỗi từ dự án cần chặn từ đầu
 
@@ -286,7 +285,6 @@ Quy ước version: `MAJOR.MINOR.PATCH`; một baseline tag cố định. Giữ 
 - SLB 4.4.0: đã có 4 project + 2024/2025 DLL và báo cáo offline compiler, 27 mock UI tests; NETLOAD/ACIS chưa thử trên Civil 3D thật.
 - HDVQ Solid Quantity 0.7.2: đã có source và hai thư mục DLL/2024/2025; có thay đổi chẩn đoán WebView2 COM. CadHost bản này dùng WinForms modeless, chưa thể coi đã đạt PaletteSet dockable tiêu chuẩn mới. Tên lệnh source là `HDVQ`, không tự đồng nhất với QSL phiên bản sau.
 - HDV C3D BuildKit 1.0: có compiler portable và Autodesk ref 2024/2025; bản thân nó chưa phải môi trường Civil 3D chạy thật, thiếu tham chiếu AecPropDataMgd 2024, chưa support 2026.
-- HVDTools RibbonPro 2025: có source installer/updater, tool.json và kiểm thử giả lập; chưa nghiệm thu tự động hiển thị Ribbon với Civil 3D Windows.
 - ATGT v1.1 và Cutter v1 là tài liệu đặc tả, không tự coi là DLL build.
 - ZIP QSL 0.8.2 / SolidCutter v2.3 / SolidInfo v4.4 / SolidLayer v1.1 chưa đọc được binary tại lần tổng hợp này, phải kiểm tra khi dùng làm baseline triển khai tiếp.
 
