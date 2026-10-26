@@ -4,7 +4,7 @@ Thư mục này dành cho các **assembly tham chiếu phục vụ biên dịch*
 
 Cần bổ sung `acdbmgdbrep.dll` để biên dịch mã sử dụng `Autodesk.AutoCAD.BoundaryRepresentation.Brep`.
 
-- File đã được người dùng cung cấp để kiểm tra: `acdbmgdbrep.dll` (PE32+ x64, .NET assembly; dung lượng 177,664 bytes).
+- File đã được người dùng cung cấp để kiểm tra: `acdbmgdbrep.dll` (PE32+ x64, .NET assembly; dung lượng 178,008 bytes).
 - SHA256 của file đã kiểm tra: `61a95900aa82c41a318e9c0f3feee5fda3c7ee8a9640c0794b5240732a15c67d`.
 - Không đưa các DLL có bản quyền Autodesk vào repository công khai. Copy từ bộ Civil 3D 2025 hoặc Autodesk SDK đã được cấp quyền trên máy build.
 - Dùng `scripts/install_c3d2025_brep_reference.ps1 -SourceDll "C:\duong-dan\acdbmgdbrep.dll"` để đặt thư viện vào `references/2025/` trên máy build.
