@@ -42,9 +42,13 @@ def dll_name(text):
         raise ValueError("Invalid DLL filename: " + text)
     return text
 
-def folder_for(root, year):
+def folder_for(root, year, runtime=None):
     if year not in HOST_YEARS:
         raise ValueError("Expected Civil 3D host year 2024/2025/2026")
+    if runtime is not None:
+        if year != 2025 or runtime not in ("net8", "net10"):
+            raise ValueError("Runtime folders are currently defined only for 2025: net8/net10")
+        return root / "references" / str(year) / runtime
     return root / "references" / str(year)
 
 def read_index(folder):
@@ -58,11 +62,11 @@ def write_index(folder, index):
         name = Path(f.name)
     os.replace(name, folder / INDEX_NAME)
 
-def add_reference(root, year, source, replace=False):
+def add_reference(root, year, source, replace=False, runtime=None):
     source = source.expanduser().resolve(strict=True)
     dll_name(source.name)
     meta = validate_dll(source)
-    folder = folder_for(root, year)
+    folder = folder_for(root, year, runtime)
     folder.mkdir(parents=True, exist_ok=True)
     matches = [p for p in folder.glob("*.dll") if p.name.lower() == source.name.lower()]
     target = matches[0] if matches else folder / source.name
@@ -81,6 +85,8 @@ def add_reference(root, year, source, replace=False):
             temp.unlink(missing_ok=True)
     idx = read_index(folder)
     idx["declaredHostYear"] = year
+    if runtime:
+        idx["declaredRuntime"] = runtime
     idx.setdefault("assemblies", {})[target.name] = {"sha256": digest, **meta}
     write_index(folder, idx)
     print("IMPORTED %s %s SHA256 %s" % (year, target.name, digest))
@@ -107,8 +113,8 @@ def needed(args):
         values.update(refs_from_project(project))
     return sorted({dll_name(x) for x in values}, key=str.lower)
 
-def check(root, year, required):
-    folder = folder_for(root, year)
+def check(root, year, required, runtime=None):
+    folder = folder_for(root, year, runtime)
     installed = {p.name.lower(): p for p in folder.glob("*.dll")} if folder.exists() else {}
     index = read_index(folder)
     indexed = {key.lower(): val for key, val in index.get("assemblies", {}).items()}
@@ -144,22 +150,25 @@ def main():
     imp.add_argument("--year", type=int, required=True)
     imp.add_argument("--source", type=Path, required=True)
     imp.add_argument("--replace", action="store_true")
+    imp.add_argument("--runtime", choices=["net8", "net10"], help="Civil 3D 2025 update profile; recommended for new reference sets")
     chk = sub.add_parser("check")
     chk.add_argument("--year", type=int, required=True)
+    chk.add_argument("--runtime", choices=["net8", "net10"])
     chk.add_argument("--require", action="append", default=[])
     chk.add_argument("--requirements-json", type=Path)
     chk.add_argument("--project", type=Path, action="append")
     listed = sub.add_parser("list")
     listed.add_argument("--year", type=int, required=True)
+    listed.add_argument("--runtime", choices=["net8", "net10"])
     a = ap.parse_args()
     try:
         root = a.root.resolve()
         if a.action == "import":
-            add_reference(root, a.year, a.source, a.replace)
+            add_reference(root, a.year, a.source, a.replace, a.runtime)
         elif a.action == "check":
-            return check(root, a.year, needed(a))
+            return check(root, a.year, needed(a), a.runtime)
         else:
-            folder = folder_for(root, a.year)
+            folder = folder_for(root, a.year, a.runtime)
             dlls = sorted(folder.glob("*.dll")) if folder.exists() else []
             for p in dlls:
                 print("%s %d %s" % (p.name, p.stat().st_size, sha256(p)))
