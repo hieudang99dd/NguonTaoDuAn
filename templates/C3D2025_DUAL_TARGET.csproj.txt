@@ -1,0 +1,50 @@
+<!-- TEMPLATE ONLY: replace YourTool and add the tool's source/assets/projects. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <C3DHostRuntime>net8</C3DHostRuntime>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <C3DHostRuntime>net10</C3DHostRuntime>
+  </PropertyGroup>
+
+  <!-- The caller supplies C3DStandardRoot pointing to the cloned generic repo.
+       Never mix framework-specific Autodesk references. -->
+  <PropertyGroup>
+    <C3DReferenceRoot>$(C3DStandardRoot)/references/2025/$(C3DHostRuntime)</C3DReferenceRoot>
+  </PropertyGroup>
+
+  <Target Name="CheckC3DHostProfile" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(C3DStandardRoot)' == ''"
+           Text="Set C3DStandardRoot to generic NguonTaoDuAn repository." />
+    <Error Condition="'$(C3DHostRuntime)' == ''"
+           Text="Choose net8.0-windows or net10.0-windows." />
+    <Error Condition="!Exists('$(C3DReferenceRoot)/AcDbMgd.dll')"
+           Text="Autodesk reference missing for $(C3DHostRuntime): $(C3DReferenceRoot)/AcDbMgd.dll" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="AcMgd">
+      <HintPath>$(C3DReferenceRoot)/AcMgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="AcDbMgd">
+      <HintPath>$(C3DReferenceRoot)/AcDbMgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="AcCoreMgd">
+      <HintPath>$(C3DReferenceRoot)/AcCoreMgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Add only the Civil 3D / AEC assemblies actually used by this tool;
+         always from the same C3DReferenceRoot and Private=false. -->
+  </ItemGroup>
+</Project>
