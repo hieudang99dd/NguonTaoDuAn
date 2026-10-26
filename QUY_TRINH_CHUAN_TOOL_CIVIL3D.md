@@ -283,6 +283,15 @@ Repository chỉ quy định quy trình, cấu trúc, công cụ kiểm tra chun
 
 > Đọc quy trình hiện hành và mã nguồn/đặc tả do người dùng cung cấp trong lần thực hiện này. Kiểm toán nguồn, tạo hoặc sửa tool theo kiến trúc chung, sử dụng logo HDV và giao diện dockable, tự làm mới danh mục thuật toán từ source đang dùng; tìm và xác minh tham chiếu Autodesk đúng phiên bản; build DLL và thư viện phụ thuộc, chỉ xác nhận NETLOAD/CAD_PASS khi chạy thực tế trong Civil 3D. Bàn giao DLL NETLOAD, full source, hướng dẫn và báo cáo.
 
-## 15. Kho tham chiếu Autodesk dùng chung
+## 15. Kho tham chiếu Autodesk dùng chung — Preflight bắt buộc
 
-Thư mục `references/<year>/` là nơi cấu hình tham chiếu build cho **mọi tool**, không gắn với thuật toán hay dự án riêng. Từng project kê khai assembly cần dùng; bước preflight kiểm tra tên file, năm host, runtime/architecture, hash và nguồn hợp lệ trước khi biên dịch. Không mặc định mọi tool đều cần cùng assembly; khi thiếu thư viện phải báo dependency chính xác, không xóa chức năng để ép build. Bản DLL Autodesk được lấy từ nguồn người dùng có quyền sử dụng trên máy build và không commit vào repository công khai. Dùng script tổng quát `scripts/add_reference.ps1` để nhập bất kỳ assembly được cấp phép vào thư mục năm tương ứng. Không sao chép Autodesk API DLL vào gói NETLOAD.
+**Áp dụng độc lập cho mọi dự án C3D.** Cấu hình tại `references/<year>/manifest.json`; mỗi tool khai báo thư viện cần sử dụng trong csproj hoặc `references.required.json`. Không cài cứng tên một tool hoặc một DLL vào bộ chuẩn.
+
+1. Khi thiếu assembly, tìm bản tham chiếu hợp lệ từ Civil 3D/ObjectARX SDK đúng năm và quyền sử dụng; không thay đổi hoặc xóa thuật toán nghiệp vụ chỉ để vượt lỗi compile.
+2. Nhập assembly trên máy build bằng `scripts/reference_manager.py import --year <year> --source <path-to-dll>` hoặc `scripts/add_reference.ps1`.
+3. Chạy `python scripts/reference_manager.py check --year <year> --project <CadHost.csproj>` và khai báo thêm các assembly không thể nhận diện tự động bằng `--require` hoặc `--requirements-json`.
+4. Nếu thiếu hoặc hash thay đổi, **dừng build** và báo đúng DLL + năm host. Khi đủ tham chiếu, kiểm tra TFM/architecture/API compatibility trước khi compile.
+5. Trong csproj, Autodesk references dùng `Private=False` và cấu hình HintPath theo năm. Không chuyển Autodesk API assemblies vào gói NETLOAD.
+6. Thực hiện build, NETLOAD và kiểm thử DWG trên Civil 3D thật; ghi bằng chứng theo trạng thái độc lập `REFERENCE_CHECK_PASS`, `BUILD_PASS`, `NETLOAD_PASS`, `CAD_PASS`.
+
+**Cần phân biệt:** preflight hiện xác minh file PE, sự tồn tại, checksum và dependency đã kê khai; chưa xác thực chữ ký Autodesk hoặc suy ra chính xác toàn bộ dependencies từ source. Xem chi tiết `references/README.md`.
